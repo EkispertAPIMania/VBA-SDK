@@ -4,7 +4,7 @@
 
 ## 使い方
 
-バイナリファイルをダウンロードするか、vbacを使ってビルドします。
+[バイナリファイルをダウンロード](https://github.com/EkispertAPIMania/VBA-SDK/releases/)するか、vbacを使ってビルドします。
 
 ```
 build.bat
