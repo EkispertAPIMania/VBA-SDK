@@ -1,6 +1,6 @@
-# 駅すぱあとAPI SDK for VBA
+# 駅すぱあと API SDK for VBA
 
-[駅すぱあとAPI](https://docs.ekispert.com/v1/index.html)をExcel VBAなどから利用するためのSDKです。
+[駅すぱあと API](https://docs.ekispert.com/v1/index.html)をExcel VBAなどから利用するためのSDKです。
 
 ## 使い方
 
@@ -14,7 +14,7 @@ build.bat
 
 ## 初期化
 
-初期化時には、駅すぱあとAPIのAPIキーを指定します。[APIキーはトライアル申し込みより取得](https://api-info.ekispert.com/form/trial/)してください。
+初期化時には、駅すぱあと APIのAPIキーを指定します。[APIキーはトライアル申し込みより取得](https://api-info.ekispert.com/form/trial/)してください。
 
 ```vb
 Dim client As Ekispert
