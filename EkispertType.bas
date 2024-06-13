@@ -58,4 +58,9 @@ Type ResultSet
     Error As EkispertError
 End Type
 
+Public Enum eNameMatchType
+    Forward = 1
+    Partial = 2
+End Enum
+
 

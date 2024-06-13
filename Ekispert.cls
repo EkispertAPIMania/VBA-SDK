@@ -39,10 +39,14 @@ End Property
 
 ' 駅検索クエリーオブジェクトを返す
 Function StationQuery() As StationQuery
-    Dim Query As StationQuery
-    Set Query = New StationQuery
-    Query.client = Me
-    Set StationQuery = Query
+    Set StationQuery = New StationQuery
+    StationQuery.client = Me
+End Function
+
+' 簡易駅検索クエリーオブジェクトを返す
+Function StationLightQuery() As StationLightQuery
+    Set StationLightQuery = New StationLightQuery
+    StationLightQuery.client = Me
 End Function
 
 Property Get Url() As String
@@ -104,6 +108,72 @@ End Property
 Property Get Success() As Boolean
     Success = m_Success
 End Property
+
+Function CreateStation(dicStation As Dictionary) As Station
+    Dim dicType As Dictionary
+    If dicStation.Exists("code") = True Then
+        CreateStation.Code = dicStation("code")
+    End If
+    If dicStation.Exists("Name") = True Then
+        CreateStation.Name = dicStation("Name")
+    End If
+    If dicStation.Exists("OldName") = True Then
+        CreateStation.OldName = dicStation("OldName")
+    End If
+    If dicStation.Exists("Yomi") = True Then
+        CreateStation.Yomi = dicStation("Yomi")
+    End If
+    If dicStation.Exists("Type") = True Then
+        If VarType(dicStation("Type")) = VbVarType.vbString Then
+            Dim tTransportType As TransportType
+            tTransportType.Text = dicStation("Type")
+            CreateStation.TransportType = tTransportType
+        Else
+            Set dicType = dicStation("Type")
+            CreateStation.TransportType = CreateTransportType(dicType)
+        End If
+    End If
+End Function
+
+' GeoPoint構造体の作成
+Function CreateGeoPoint(dicGeoPoint As Dictionary) As GeoPoint
+    If dicGeoPoint.Exists("gcs") = True Then
+        CreateGeoPoint.Gcs = dicGeoPoint("gcs")
+    End If
+    If dicGeoPoint.Exists("lati_d") = True Then
+        CreateGeoPoint.Latitude_DD = dicGeoPoint("lati_d")
+    End If
+    If dicGeoPoint.Exists("longi_d") = True Then
+        CreateGeoPoint.Longitude_DD = dicGeoPoint("longi_d")
+    End If
+    If dicGeoPoint.Exists("lati") = True Then
+        CreateGeoPoint.Latitude_DMS = dicGeoPoint("lati")
+    End If
+    If dicGeoPoint.Exists("longi") = True Then
+        CreateGeoPoint.Longitude_DMS = dicGeoPoint("longi")
+    End If
+End Function
+
+
+' Prefecture構造体の作成
+Function CreatePrefecture(dicPrefecture As Dictionary) As Prefecture
+    If dicPrefecture.Exists("code") = True Then
+        CreatePrefecture.Code = dicPrefecture("code")
+    End If
+    If dicPrefecture.Exists("Name") = True Then
+        CreatePrefecture.Name = dicPrefecture("Name")
+    End If
+End Function
+
+
+Function CreateTransportType(dictType As Dictionary) As TransportType
+    If dictType.Exists("text") = True Then
+        CreateTransportType.Text = dictType("text")
+    End If
+    If dictType.Exists("detail") = True Then
+        CreateTransportType.Detail = dictType("detail")
+    End If
+End Function
 
 
 ' 指定したキーが配列ではない場合、配列にする

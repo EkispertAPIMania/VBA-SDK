@@ -44,6 +44,25 @@ For i = 0 To UBound(Result.Points)
 Next i
 ```
 
+## 駅情報の取得（簡易）
+
+無料で使える駅簡易情報取得を使う場合です。検索条件、結果は[駅簡易情報 - 駅すぱあと API Documents 駅データ・経路検索のWebAPI](https://docs.ekispert.com/v1/api/station/light.html)を参照してください。
+
+```vb
+Dim Query As StationLightQuery ' 駅簡易情報取得用クエリー
+Set Query = client.StationLightQuery()
+Query.Name = "東京" ' 駅名で検索
+Dim Result As ResultSet
+Result = Query.Find()
+
+Dim i As Long
+
+For i = 0 To UBound(Result.Points)
+		Debug.Print i & " " & Result.Points(i).Station.Name
+		Debug.Print i & " " & Result.Points(i).Station.Yomi
+Next i
+```
+
 ## 依存ライブラリ
 
 すべてMITライセンスのライブラリを使用しています。

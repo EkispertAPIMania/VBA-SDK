@@ -2,40 +2,29 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "StationQuery"
+Attribute VB_Name = "StationLightQuery"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Private m_Name As String
-Private m_OldName As String
+Private m_NameMatchType As eNameMatchType
 Private m_Code As Long
-Private m_CorporationName As String
-Private m_RailName As String
-Private m_OperationLineCode As String
 Private m_TransportType As String
 Private m_PrefectureCode As Integer
-Private m_Offset As Integer ' Default: 1
-Private m_Limit As Integer ' Default: 100
-Private m_Direction As String ' Default: up
 Private m_CorporationBind As String
-Private m_AddGateGroup As Boolean ' Default: false
-Private m_CommunityBus  As String ' Default: contain
-Private m_Gcs As String
+Private m_CommunityBus As String
 
 Private m_Client As Ekispert
 
 Private Sub Class_Initialize()
-    m_Offset = 1
-    m_Limit = 100
-    m_Direction = "up"
-    m_AddGateGroup = False
+    m_NameMatchType = eNameMatchType.Forward
     m_CommunityBus = "contain"
 End Sub
 
-Public Function Find(Optional Light As Boolean = False) As ResultSet
+Public Function Find() As ResultSet
     Dim ApiPath As String
-    ApiPath = "/v1/json/station"
+    ApiPath = "/v1/json/station/light"
     Dim Query As Dictionary
     Set Query = BuildQuery()
     Dim Result As Dictionary
@@ -52,10 +41,6 @@ Public Function Find(Optional Light As Boolean = False) As ResultSet
     m_Client.SetArray dicPoints, Result, "Point"
     Response.Max = Result("max")
     Response.Offset = Result("offset")
-    ' 往復の種類を表す要素。railNameを指定した時のみ付加します。
-    If Result.Exists("RoundTripType") = True Then
-        Response.RoundTripType = Result("RoundTripType")
-    End If
     Response.Points = CreatePoints(dicPoints)
     Response.Success = True
     Find = Response
@@ -71,18 +56,6 @@ Function CreatePoints(dicPoints() As Dictionary) As Point()
         Set dicPoint = dicPoints(i)
         ' Debug.Print JsonConverter.ConvertToJson(dicPoint)
         Dim tPoint  As Point
-        If dicPoint.Exists("getOff") = True Then
-            tPoint.GetOff = dicPoint("getOff")
-        End If
-        If dicPoint.Exists("getOn") = True Then
-            tPoint.GetOn = dicPoint("getOn")
-        End If
-        If dicPoint.Exists("onRoute") = True Then
-            tPoint.OnRoute = dicPoint("onRoute")
-        End If
-        If dicPoint.Exists("onRouteEdge") = True Then
-            tPoint.OnRouteEdge = dicPoint("onRouteEdge")
-        End If
         ' Station
         Dim dicStation As Dictionary
         Set dicStation = dicPoint("Station")
@@ -92,16 +65,11 @@ Function CreatePoints(dicPoints() As Dictionary) As Point()
         Dim dicPrefecture As Dictionary
         Set dicPrefecture = dicPoint("Prefecture")
         tPoint.Prefecture = m_Client.CreatePrefecture(dicPrefecture)
-        
-        ' GeoPoint
-        Dim dicGeoPoint As Dictionary
-        Set dicGeoPoint = dicPoint("GeoPoint")
-        tPoint.GeoPoint = m_Client.CreateGeoPoint(dicGeoPoint)
-        
         Points(i) = tPoint
     Next i
     CreatePoints = Points
 End Function
+
 
 Property Let client(ByVal client As Ekispert)
     Set m_Client = client
@@ -115,24 +83,8 @@ Property Get Name() As String
     Name = m_Name
 End Property
 
-Property Let OldName(ByVal OldName As String)
-    m_OldName = OldName
-End Property
-
 Property Let Code(ByVal Code As Long)
     m_Code = Code
-End Property
-
-Property Let CorporationName(ByVal CorporationName As String)
-    m_CorporationName = CorporationName
-End Property
-
-Property Let RailName(ByVal RailName As String)
-    m_RailName = RailName
-End Property
-
-Property Let OperationLineCode(ByVal OperationLineCode As String)
-    m_OperationLineCode = OperationLineCode
 End Property
 
 Property Let TransportType(ByVal TransportType As String)
@@ -143,32 +95,16 @@ Property Let PrefectureCode(ByVal PrefectureCode As Integer)
     m_PrefectureCode = PrefectureCode
 End Property
 
-Property Let Offset(ByVal Offset As Integer)
-    m_Offset = Offset
-End Property
-
-Property Let Limit(ByVal Limit As Integer)
-    m_Limit = Limit
-End Property
-
-Property Let Direction(ByVal Direction As String)
-    m_Direction = Direction
-End Property
-
 Property Let CorporationBind(ByVal CorporationBind As String)
     m_CorporationBind = CorporationBind
-End Property
-
-Property Let AddGateGroup(ByVal AddGateGroup As Boolean)
-    m_AddGateGroup = AddGateGroup
 End Property
 
 Property Let CommunityBus(ByVal CommunityBus As String)
     m_CommunityBus = CommunityBus
 End Property
 
-Property Let Gcs(ByVal Gcs As String)
-    m_Gcs = Gcs
+Property Let NameMatchType(ByVal NameMatchType As eNameMatchType)
+    m_NameMatchType = NameMatchType
 End Property
 
 
@@ -177,46 +113,22 @@ Function BuildQuery() As Dictionary
     If m_Name <> "" Then
         BuildQuery.Add "name", m_Name
     End If
-    If m_OldName <> "" Then
-        BuildQuery.Add "oldName", m_OldName
-    End If
     If m_Code > 0 Then
         BuildQuery.Add "code", m_Code & ""
     End If
-    If m_CorporationName <> "" Then
-        BuildQuery.Add "corporationName", m_CorporationName
-    End If
-    If m_RailName <> "" Then
-        BuildQuery.Add "railName", m_RailName
-    End If
-    If m_OperationLineCode <> "" Then
-        BuildQuery.Add "operationLineCode", m_OperationLineCode
-    End If
+    BuildQuery.Add "nameMatchType", IIf(m_NameMatchType = Forward, "forward", "partial")
     If m_TransportType <> "" Then
         BuildQuery.Add "type", m_TransportType
     End If
     If m_PrefectureCode > 0 Then
         BuildQuery.Add "prefectureCode", m_PrefectureCode
     End If
-    If m_Offset > 0 Then
-        BuildQuery.Add "offset", m_Offset
-    End If
-    If m_Limit > 0 Then
-        BuildQuery.Add "limit", m_Limit
-    End If
-    If m_Direction <> "" Then
-        BuildQuery.Add "direction", m_Direction
-    End If
     If m_CorporationBind <> "" Then
         BuildQuery.Add "corporationBind", m_CorporationBind
     End If
-    BuildQuery.Add "addGateGroup", IIf(m_AddGateGroup, "true", "false")
     If m_CommunityBus <> "" Then
         BuildQuery.Add "communityBus", m_CommunityBus
     End If
-    If m_Gcs <> "" Then
-        BuildQuery.Add "gcs", m_Gcs
-    End If
-    
 End Function
+
 
