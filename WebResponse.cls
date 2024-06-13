@@ -232,7 +232,7 @@ Public Function ExtractHeaders(ResponseHeaders As String) As Collection
             If Not web_Multiline Then
                 Set web_Header = WebHelpers.CreateKeyValue( _
                     Key:=VBA.Trim(VBA.Mid$(web_Lines(web_i), 1, web_ColonPosition - 1)), _
-                    Value:=VBA.Trim(VBA.Mid$(web_Lines(web_i), web_ColonPosition + 1, VBA.Len(web_Lines(web_i)))) _
+                    value:=VBA.Trim(VBA.Mid$(web_Lines(web_i), web_ColonPosition + 1, VBA.Len(web_Lines(web_i)))) _
                 )
             Else
                 web_Header("Value") = web_Header("Value") & web_CrLf & web_Lines(web_i)

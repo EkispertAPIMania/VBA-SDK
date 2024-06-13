@@ -196,3 +196,27 @@ NotArray:
     Set ary(0) = Data(Key)
 End Sub
 
+Function GetTransportType(TransportType As TransportTypeEnum) As String
+    Select Case TransportType
+    Case TransportTypeEnum.Train
+        GetTransportType = "train"
+    Case TransportTypeEnum.Plane
+        GetTransportType = "plane"
+    Case TransportTypeEnum.Ship
+        GetTransportType = "ship"
+    Case TransportTypeEnum.Bus
+        GetTransportType = "bus"
+    Case TransportTypeEnum.Walk
+        GetTransportType = "walk"
+    Case TransportTypeEnum.Strange
+        GetTransportType = "strange"
+    Case TransportTypeEnum.LocalBus
+        GetTransportType = "bus.local"
+    Case TransportTypeEnum.ConnectionBus
+        GetTransportType = "bus.connection"
+    Case TransportTypeEnum.HighwayBus
+        GetTransportType = "bus.highway"
+    Case TransportTypeEnum.MidnightBus
+        GetTransportType = "bus.midnight"
+    End Select
+End Function

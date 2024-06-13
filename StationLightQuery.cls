@@ -8,18 +8,18 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Private m_Name As String
-Private m_NameMatchType As eNameMatchType
+Private m_NameMatchType As NameMatchTypeEnum
 Private m_Code As Long
-Private m_TransportType As String
-Private m_PrefectureCode As Integer
+Private m_TransportType() As String
+Private m_PrefectureCode() As String
 Private m_CorporationBind As String
-Private m_CommunityBus As String
+Private m_CommunityBus As CommunityBusEnum
 
 Private m_Client As Ekispert
 
 Private Sub Class_Initialize()
-    m_NameMatchType = eNameMatchType.Forward
-    m_CommunityBus = "contain"
+    m_NameMatchType = Forward
+    m_CommunityBus = Contain
 End Sub
 
 Public Function Find() As ResultSet
@@ -87,23 +87,25 @@ Property Let Code(ByVal Code As Long)
     m_Code = Code
 End Property
 
-Property Let TransportType(ByVal TransportType As String)
-     m_TransportType = TransportType
+Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
+    ReDim Preserve m_TransportType(i) As String
+     m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
-Property Let PrefectureCode(ByVal PrefectureCode As Integer)
-    m_PrefectureCode = PrefectureCode
+Property Let PrefectureCode(i As Long, Code As PrefectureEnum)
+    ReDim Preserve m_PrefectureCode(i) As String
+    m_PrefectureCode(i) = CStr(Code)
 End Property
 
 Property Let CorporationBind(ByVal CorporationBind As String)
     m_CorporationBind = CorporationBind
 End Property
 
-Property Let CommunityBus(ByVal CommunityBus As String)
+Property Let CommunityBus(ByVal CommunityBus As CommunityBusEnum)
     m_CommunityBus = CommunityBus
 End Property
 
-Property Let NameMatchType(ByVal NameMatchType As eNameMatchType)
+Property Let NameMatchType(ByVal NameMatchType As NameMatchTypeEnum)
     m_NameMatchType = NameMatchType
 End Property
 
@@ -117,18 +119,16 @@ Function BuildQuery() As Dictionary
         BuildQuery.Add "code", m_Code & ""
     End If
     BuildQuery.Add "nameMatchType", IIf(m_NameMatchType = Forward, "forward", "partial")
-    If m_TransportType <> "" Then
-        BuildQuery.Add "type", m_TransportType
+    If (Not m_TransportType) <> -1 Then
+        BuildQuery.Add "type", Join(m_TransportType, ":")
     End If
-    If m_PrefectureCode > 0 Then
-        BuildQuery.Add "prefectureCode", m_PrefectureCode
+    If (Not m_PrefectureCode) <> -1 Then
+        BuildQuery.Add "prefectureCode", Join(m_PrefectureCode, ":")
     End If
     If m_CorporationBind <> "" Then
         BuildQuery.Add "corporationBind", m_CorporationBind
     End If
-    If m_CommunityBus <> "" Then
-        BuildQuery.Add "communityBus", m_CommunityBus
-    End If
+    BuildQuery.Add "communityBus", IIf(m_CommunityBus = Contain, "contain", "except")
 End Function
 
 

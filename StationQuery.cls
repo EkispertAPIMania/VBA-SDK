@@ -13,14 +13,14 @@ Private m_Code As Long
 Private m_CorporationName As String
 Private m_RailName As String
 Private m_OperationLineCode As String
-Private m_TransportType As String
-Private m_PrefectureCode As Integer
+Private m_TransportType() As String
+Private m_PrefectureCode() As String
 Private m_Offset As Integer ' Default: 1
 Private m_Limit As Integer ' Default: 100
 Private m_Direction As String ' Default: up
 Private m_CorporationBind As String
 Private m_AddGateGroup As Boolean ' Default: false
-Private m_CommunityBus  As String ' Default: contain
+Private m_CommunityBus  As CommunityBusEnum ' Default: contain
 Private m_Gcs As String
 
 Private m_Client As Ekispert
@@ -30,7 +30,7 @@ Private Sub Class_Initialize()
     m_Limit = 100
     m_Direction = "up"
     m_AddGateGroup = False
-    m_CommunityBus = "contain"
+    m_CommunityBus = Contain
 End Sub
 
 Public Function Find(Optional Light As Boolean = False) As ResultSet
@@ -135,12 +135,14 @@ Property Let OperationLineCode(ByVal OperationLineCode As String)
     m_OperationLineCode = OperationLineCode
 End Property
 
-Property Let TransportType(ByVal TransportType As String)
-     m_TransportType = TransportType
+Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
+    ReDim Preserve m_TransportType(i) As String
+     m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
-Property Let PrefectureCode(ByVal PrefectureCode As Integer)
-    m_PrefectureCode = PrefectureCode
+Property Let PrefectureCode(i As Long, Code As Integer)
+    ReDim Preserve m_PrefectureCode(i) As String
+    m_PrefectureCode(i) = CStr(Code)
 End Property
 
 Property Let Offset(ByVal Offset As Integer)
@@ -163,7 +165,7 @@ Property Let AddGateGroup(ByVal AddGateGroup As Boolean)
     m_AddGateGroup = AddGateGroup
 End Property
 
-Property Let CommunityBus(ByVal CommunityBus As String)
+Property Let CommunityBus(ByVal CommunityBus As CommunityBusEnum)
     m_CommunityBus = CommunityBus
 End Property
 
@@ -192,11 +194,11 @@ Function BuildQuery() As Dictionary
     If m_OperationLineCode <> "" Then
         BuildQuery.Add "operationLineCode", m_OperationLineCode
     End If
-    If m_TransportType <> "" Then
-        BuildQuery.Add "type", m_TransportType
+    If (Not m_TransportType) <> -1 Then
+        BuildQuery.Add "type", Join(m_TransportType, ":")
     End If
-    If m_PrefectureCode > 0 Then
-        BuildQuery.Add "prefectureCode", m_PrefectureCode
+    If (Not m_PrefectureCode) <> -1 Then
+        BuildQuery.Add "prefectureCode", Join(m_PrefectureCode, ":")
     End If
     If m_Offset > 0 Then
         BuildQuery.Add "offset", m_Offset
@@ -211,9 +213,7 @@ Function BuildQuery() As Dictionary
         BuildQuery.Add "corporationBind", m_CorporationBind
     End If
     BuildQuery.Add "addGateGroup", IIf(m_AddGateGroup, "true", "false")
-    If m_CommunityBus <> "" Then
-        BuildQuery.Add "communityBus", m_CommunityBus
-    End If
+    BuildQuery.Add "communityBus", IIf(m_CommunityBus = Contain, "contain", "except")
     If m_Gcs <> "" Then
         BuildQuery.Add "gcs", m_Gcs
     End If
