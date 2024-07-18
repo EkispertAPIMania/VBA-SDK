@@ -63,6 +63,28 @@ For i = 0 To UBound(Result.Points)
 Next i
 ```
 
+## 経路探索
+
+経路探索APIを実行します。検索条件、結果は[経路探索 - 駅すぱあと API Documents 駅データ・経路検索のWebAPI](https://docs.ekispert.com/v1/api/search/course/extreme.html)を参照してください。
+
+```vb
+Dim Query As CourseExtremeQuery
+Set Query = Client.CourseExtremeQuery()
+
+Query.ViaList(0) = "高円寺"
+Query.ViaList(1) = "東京"
+Query.DateProp = Now
+
+Dim Result As ResultSet
+Result = Query.Find()
+If Result.Success = False Then
+		Debug.Print Result.Error.Message
+End If
+For i = 0 To UBound(Result.Courses)
+		Debug.Print i & " " & Debug.Print Result.Courses(i).Prices(0).Oneway
+Next i
+```
+
 ## 依存ライブラリ
 
 すべてMITライセンスのライブラリを使用しています。

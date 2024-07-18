@@ -71,8 +71,8 @@ Function CreatePoints(dicPoints() As Dictionary) As Point()
 End Function
 
 
-Property Let client(ByVal client As Ekispert)
-    Set m_Client = client
+Property Let Client(ByVal Client As Ekispert)
+    Set m_Client = Client
 End Property
 
 Property Let Name(ByVal Name As String)
@@ -83,8 +83,8 @@ Property Get Name() As String
     Name = m_Name
 End Property
 
-Property Let Code(ByVal Code As Long)
-    m_Code = Code
+Property Let code(ByVal code As Long)
+    m_Code = code
 End Property
 
 Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
@@ -92,9 +92,9 @@ Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
      m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
-Property Let PrefectureCode(i As Long, Code As PrefectureEnum)
+Property Let PrefectureCode(i As Long, code As PrefectureEnum)
     ReDim Preserve m_PrefectureCode(i) As String
-    m_PrefectureCode(i) = CStr(Code)
+    m_PrefectureCode(i) = CStr(code)
 End Property
 
 Property Let CorporationBind(ByVal CorporationBind As String)

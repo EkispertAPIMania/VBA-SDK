@@ -40,13 +40,19 @@ End Property
 ' 駅検索クエリーオブジェクトを返す
 Function StationQuery() As StationQuery
     Set StationQuery = New StationQuery
-    StationQuery.client = Me
+    StationQuery.Client = Me
 End Function
 
 ' 簡易駅検索クエリーオブジェクトを返す
 Function StationLightQuery() As StationLightQuery
     Set StationLightQuery = New StationLightQuery
-    StationLightQuery.client = Me
+    StationLightQuery.Client = Me
+End Function
+
+' 経路探索クエリーオブジェクトを返す
+Function CourseExtremeQuery() As CourseExtremeQuery
+    Set CourseExtremeQuery = New CourseExtremeQuery
+    CourseExtremeQuery.Client = Me
 End Function
 
 Property Get Url() As String
@@ -62,8 +68,8 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     Dim e As EkispertError
     m_Error = e
     m_Success = False
-    Dim client As New WebClient
-    client.BaseUrl = Url
+    Dim Client As New WebClient
+    Client.BaseUrl = Url
     
     Dim DirectionsRequest As New WebRequest
     DirectionsRequest.Method = WebMethod.HttpGet
@@ -79,8 +85,8 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     
     DirectionsRequest.Resource = ApiPath & "?" & Join(QueryString, "&")
     Dim Response As WebResponse
-    Set Response = client.Execute(DirectionsRequest)
-    Debug.Print client.GetFullUrl(DirectionsRequest)
+    Set Response = Client.Execute(DirectionsRequest)
+    Debug.Print Client.GetFullUrl(DirectionsRequest)
     
     If Response.StatusCode <> WebStatusCode.Ok Then
         Dim Error As Dictionary
@@ -97,7 +103,7 @@ Sub BuildError(Error As Dictionary)
     m_Error.EngineVersion = Error("engineVersion")
     Dim e As Dictionary
     Set e = Error("Error")
-    m_Error.Code = e("code")
+    m_Error.code = e("code")
     m_Error.Message = e("Message")
 End Sub
 
@@ -112,7 +118,7 @@ End Property
 Function CreateStation(dicStation As Dictionary) As Station
     Dim dicType As Dictionary
     If dicStation.Exists("code") = True Then
-        CreateStation.Code = dicStation("code")
+        CreateStation.code = dicStation("code")
     End If
     If dicStation.Exists("Name") = True Then
         CreateStation.Name = dicStation("Name")
@@ -126,7 +132,7 @@ Function CreateStation(dicStation As Dictionary) As Station
     If dicStation.Exists("Type") = True Then
         If VarType(dicStation("Type")) = VbVarType.vbString Then
             Dim tTransportType As TransportType
-            tTransportType.Text = dicStation("Type")
+            tTransportType.text = dicStation("Type")
             CreateStation.TransportType = tTransportType
         Else
             Set dicType = dicStation("Type")
@@ -138,7 +144,7 @@ End Function
 ' GeoPoint構造体の作成
 Function CreateGeoPoint(dicGeoPoint As Dictionary) As GeoPoint
     If dicGeoPoint.Exists("gcs") = True Then
-        CreateGeoPoint.Gcs = dicGeoPoint("gcs")
+        CreateGeoPoint.GCS = dicGeoPoint("gcs")
     End If
     If dicGeoPoint.Exists("lati_d") = True Then
         CreateGeoPoint.Latitude_DD = dicGeoPoint("lati_d")
@@ -158,7 +164,7 @@ End Function
 ' Prefecture構造体の作成
 Function CreatePrefecture(dicPrefecture As Dictionary) As Prefecture
     If dicPrefecture.Exists("code") = True Then
-        CreatePrefecture.Code = dicPrefecture("code")
+        CreatePrefecture.code = dicPrefecture("code")
     End If
     If dicPrefecture.Exists("Name") = True Then
         CreatePrefecture.Name = dicPrefecture("Name")
@@ -168,13 +174,29 @@ End Function
 
 Function CreateTransportType(dictType As Dictionary) As TransportType
     If dictType.Exists("text") = True Then
-        CreateTransportType.Text = dictType("text")
+        CreateTransportType.text = dictType("text")
     End If
     If dictType.Exists("detail") = True Then
         CreateTransportType.Detail = dictType("detail")
     End If
 End Function
 
+Sub ArrayToString(ByRef dict As Dictionary, strKey As String, aryString() As String, Optional strJoin As String = ":")
+    If (Not aryString) <> -1 Then
+        dict.Add strKey, Join(aryString, strJoin)
+    End If
+End Sub
+
+Public Property Get GCSString(m_Gcs As GCSEnum) As String
+    Select Case m_Gcs
+    Case GCSEnum.Tokyo
+        GCSString = "tokyo"
+    Case GCSEnum.Wgs84
+        GCSString = "wgs84"
+    Case Else
+        GCSString = ""
+    End Select
+End Property
 
 ' 指定したキーが配列ではない場合、配列にする
 ' 配列の場合は、配列で返す
@@ -182,7 +204,7 @@ Sub SetArray(ByRef ary() As Dictionary, Data As Dictionary, Key As String)
 On Error GoTo NotArray
 
     Dim Index As Long
-    ReDim ary(Data(Key).Count) As Dictionary
+    ReDim ary(Data(Key).Count - 1) As Dictionary
     Dim Params As Dictionary
     
     For Each Params In Data(Key)

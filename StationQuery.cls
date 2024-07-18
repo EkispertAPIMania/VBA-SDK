@@ -21,7 +21,7 @@ Private m_Direction As String ' Default: up
 Private m_CorporationBind As String
 Private m_AddGateGroup As Boolean ' Default: false
 Private m_CommunityBus  As CommunityBusEnum ' Default: contain
-Private m_Gcs As String
+Private m_Gcs As GCSEnum
 
 Private m_Client As Ekispert
 
@@ -31,6 +31,7 @@ Private Sub Class_Initialize()
     m_Direction = "up"
     m_AddGateGroup = False
     m_CommunityBus = Contain
+    m_Gcs = GCSEnum.Tokyo
 End Sub
 
 Public Function Find(Optional Light As Boolean = False) As ResultSet
@@ -103,8 +104,8 @@ Function CreatePoints(dicPoints() As Dictionary) As Point()
     CreatePoints = Points
 End Function
 
-Property Let client(ByVal client As Ekispert)
-    Set m_Client = client
+Property Let Client(ByVal Client As Ekispert)
+    Set m_Client = Client
 End Property
 
 Property Let Name(ByVal Name As String)
@@ -119,8 +120,8 @@ Property Let OldName(ByVal OldName As String)
     m_OldName = OldName
 End Property
 
-Property Let Code(ByVal Code As Long)
-    m_Code = Code
+Property Let code(ByVal code As Long)
+    m_Code = code
 End Property
 
 Property Let CorporationName(ByVal CorporationName As String)
@@ -140,9 +141,9 @@ Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
      m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
-Property Let PrefectureCode(i As Long, Code As Integer)
+Property Let PrefectureCode(i As Long, code As Integer)
     ReDim Preserve m_PrefectureCode(i) As String
-    m_PrefectureCode(i) = CStr(Code)
+    m_PrefectureCode(i) = CStr(code)
 End Property
 
 Property Let Offset(ByVal Offset As Integer)
@@ -169,8 +170,8 @@ Property Let CommunityBus(ByVal CommunityBus As CommunityBusEnum)
     m_CommunityBus = CommunityBus
 End Property
 
-Property Let Gcs(ByVal Gcs As String)
-    m_Gcs = Gcs
+Property Let GCS(ByVal value As GCSEnum)
+    m_Gcs = value
 End Property
 
 
@@ -214,8 +215,8 @@ Function BuildQuery() As Dictionary
     End If
     BuildQuery.Add "addGateGroup", IIf(m_AddGateGroup, "true", "false")
     BuildQuery.Add "communityBus", IIf(m_CommunityBus = Contain, "contain", "except")
-    If m_Gcs <> "" Then
-        BuildQuery.Add "gcs", m_Gcs
+    If m_Client.GCSString(m_Gcs) <> "" Then
+        BuildQuery.Add "gcs", m_Client.GCSString(m_Gcs)
     End If
     
 End Function

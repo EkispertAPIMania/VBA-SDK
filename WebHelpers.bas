@@ -521,10 +521,10 @@ End Sub
 ' @param {WebClient} Client
 ' @param {WebRequest} Request
 ''
-Public Sub LogRequest(client As WebClient, Request As WebRequest)
+Public Sub LogRequest(Client As WebClient, Request As WebRequest)
     If EnableLogging Then
         Debug.Print "--> Request - " & Format(Now, "Long Time")
-        Debug.Print MethodToName(Request.Method) & " " & client.GetFullUrl(Request)
+        Debug.Print MethodToName(Request.Method) & " " & Client.GetFullUrl(Request)
 
         Dim web_KeyValue As Dictionary
         For Each web_KeyValue In Request.Headers
@@ -551,7 +551,7 @@ End Sub
 ' @param {WebRequest} Request
 ' @param {WebResponse} Response
 ''
-Public Sub LogResponse(client As WebClient, Request As WebRequest, Response As WebResponse)
+Public Sub LogResponse(Client As WebClient, Request As WebRequest, Response As WebResponse)
     If EnableLogging Then
         Dim web_KeyValue As Dictionary
 
@@ -872,7 +872,7 @@ End Function
 ' @param {UrlEncodingMode} [EncodingMode = StrictUrlEncoding]
 ' @return {String} Encoded string
 ''
-Public Function URLEncode(Text As Variant, _
+Public Function URLEncode(text As Variant, _
     Optional SpaceAsPlus As Boolean = False, Optional EncodeUnsafe As Boolean = True, _
     Optional EncodingMode As UrlEncodingMode = UrlEncodingMode.StrictUrlEncoding) As String
 
@@ -888,7 +888,7 @@ Public Function URLEncode(Text As Variant, _
     Dim web_UrlVal As String
     Dim web_StringLen As Long
 
-    web_UrlVal = VBA.CStr(Text)
+    web_UrlVal = VBA.CStr(text)
     web_StringLen = VBA.Len(web_UrlVal)
 
     If web_StringLen > 0 Then
@@ -1064,15 +1064,15 @@ End Function
 ' @param {Variant} Text Text to encode
 ' @return {String} Encoded string
 ''
-Public Function Base64Encode(Text As String) As String
+Public Function Base64Encode(text As String) As String
 #If Mac Then
     Dim web_Command As String
-    web_Command = "printf " & PrepareTextForPrintf(Text) & " | openssl base64"
+    web_Command = "printf " & PrepareTextForPrintf(text) & " | openssl base64"
     Base64Encode = ExecuteInShell(web_Command).Output
 #Else
     Dim web_Bytes() As Byte
 
-    web_Bytes = VBA.StrConv(Text, vbFromUnicode)
+    web_Bytes = VBA.StrConv(text, vbFromUnicode)
     Base64Encode = web_AnsiBytesToBase64(web_Bytes)
 #End If
 
@@ -1102,8 +1102,8 @@ Public Function Base64Decode(Encoded As Variant) As String
     Set web_XmlObj = CreateObject("MSXML2.DOMDocument")
     Set web_Node = web_XmlObj.createElement("b64")
 
-    web_Node.DataType = "bin.base64"
-    web_Node.Text = Encoded
+    web_Node.dataType = "bin.base64"
+    web_Node.text = Encoded
     Base64Decode = VBA.StrConv(web_Node.nodeTypedValue, vbUnicode)
 
     Set web_Node = Nothing
@@ -1745,10 +1745,10 @@ End Function
 ' @param {String} [Format="Hex"] "Hex" or "Base64" encoding for result
 ' @return {String} HMAC-SHA1
 ''
-Public Function HMACSHA1(Text As String, Secret As String, Optional Format As String = "Hex") As String
+Public Function HMACSHA1(text As String, Secret As String, Optional Format As String = "Hex") As String
 #If Mac Then
     Dim web_Command As String
-    web_Command = "printf " & PrepareTextForPrintf(Text) & " | openssl dgst -sha1 -hmac " & PrepareTextForShell(Secret)
+    web_Command = "printf " & PrepareTextForPrintf(text) & " | openssl dgst -sha1 -hmac " & PrepareTextForShell(Secret)
 
     If Format = "Base64" Then
         web_Command = web_Command & " -binary | openssl enc -base64"
@@ -1761,7 +1761,7 @@ Public Function HMACSHA1(Text As String, Secret As String, Optional Format As St
     Dim web_SecretBytes() As Byte
     Dim web_Bytes() As Byte
 
-    web_TextBytes = VBA.StrConv(Text, vbFromUnicode)
+    web_TextBytes = VBA.StrConv(text, vbFromUnicode)
     web_SecretBytes = VBA.StrConv(Secret, vbFromUnicode)
 
     Set web_Crypto = CreateObject("System.Security.Cryptography.HMACSHA1")
@@ -1792,10 +1792,10 @@ End Function
 ' @param {String} [Format="Hex"] "Hex" or "Base64" encoding for result
 ' @return {String} HMAC-SHA256
 ''
-Public Function HmacSha256(Text As String, Secret As String, Optional Format As String = "Hex") As String
+Public Function HmacSha256(text As String, Secret As String, Optional Format As String = "Hex") As String
 #If Mac Then
     Dim web_Command As String
-    web_Command = "printf " & PrepareTextForPrintf(Text) & " | openssl dgst -sha256 -hmac " & PrepareTextForShell(Secret)
+    web_Command = "printf " & PrepareTextForPrintf(text) & " | openssl dgst -sha256 -hmac " & PrepareTextForShell(Secret)
 
     If Format = "Base64" Then
         web_Command = web_Command & " -binary | openssl enc -base64"
@@ -1808,7 +1808,7 @@ Public Function HmacSha256(Text As String, Secret As String, Optional Format As 
     Dim web_SecretBytes() As Byte
     Dim web_Bytes() As Byte
 
-    web_TextBytes = VBA.StrConv(Text, vbFromUnicode)
+    web_TextBytes = VBA.StrConv(text, vbFromUnicode)
     web_SecretBytes = VBA.StrConv(Secret, vbFromUnicode)
 
     Set web_Crypto = CreateObject("System.Security.Cryptography.HMACSHA256")
@@ -1841,10 +1841,10 @@ End Function
 ' @param {String} [Format="Hex"] "Hex" or "Base64" encoding for result
 ' @return {String} MD5 Hash
 ''
-Public Function MD5(Text As String, Optional Format As String = "Hex") As String
+Public Function MD5(text As String, Optional Format As String = "Hex") As String
 #If Mac Then
     Dim web_Command As String
-    web_Command = "printf " & PrepareTextForPrintf(Text) & " | openssl dgst -md5"
+    web_Command = "printf " & PrepareTextForPrintf(text) & " | openssl dgst -md5"
 
     If Format = "Base64" Then
         web_Command = web_Command & " -binary | openssl enc -base64"
@@ -1856,7 +1856,7 @@ Public Function MD5(Text As String, Optional Format As String = "Hex") As String
     Dim web_TextBytes() As Byte
     Dim web_Bytes() As Byte
 
-    web_TextBytes = VBA.StrConv(Text, vbFromUnicode)
+    web_TextBytes = VBA.StrConv(text, vbFromUnicode)
 
     Set web_Crypto = CreateObject("System.Security.Cryptography.MD5CryptoServiceProvider")
     web_Bytes = web_Crypto.ComputeHash_2(web_TextBytes)
@@ -1934,9 +1934,9 @@ Private Function web_AnsiBytesToBase64(web_Bytes() As Byte)
     Set web_XmlObj = CreateObject("MSXML2.DOMDocument")
     Set web_Node = web_XmlObj.createElement("b64")
 
-    web_Node.DataType = "bin.base64"
+    web_Node.dataType = "bin.base64"
     web_Node.nodeTypedValue = web_Bytes
-    web_AnsiBytesToBase64 = web_Node.Text
+    web_AnsiBytesToBase64 = web_Node.text
 
     Set web_Node = Nothing
     Set web_XmlObj = Nothing
