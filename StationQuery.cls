@@ -170,7 +170,7 @@ Property Let CommunityBus(ByVal CommunityBus As CommunityBusEnum)
     m_CommunityBus = CommunityBus
 End Property
 
-Property Let GCS(ByVal value As GCSEnum)
+Property Let Gcs(ByVal value As GCSEnum)
     m_Gcs = value
 End Property
 

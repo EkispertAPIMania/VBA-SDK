@@ -4,7 +4,7 @@ Type GeoPoint
     Latitude_DMS As String
     Longitude_DD As String
     Latitude_DD As String
-    GCS As String
+    Gcs As String
 End Type
 
 Type Prefecture
@@ -19,7 +19,7 @@ Type Gate
 End Type
 
 Type TransportType
-    text As String
+    Text As String
     Detail As String
 End Type
 
@@ -50,7 +50,7 @@ Type EkispertError
 End Type
 
 Type DateTime
-    text As String
+    Text As String
     operation As String
 End Type
 
@@ -96,6 +96,13 @@ Type Line
     Color As String
 End Type
 
+Type Remark
+    Text As Long
+    Remark As String
+    FullRemark As String
+End Type
+
+
 Type Price
     FareRevisionStatus As String
     ToLineIndex As Long
@@ -105,8 +112,10 @@ Type Price
     Selected As Boolean
     Type As String
     Oneway As Long
+    OnewayRemark As Remark
     RevisionStatus As String
     Round As Long
+    RoundRemark As Remark
 End Type
 
 Type Teiki
@@ -125,7 +134,6 @@ Type Route
     Lines() As Line
     Points() As Point
 End Type
-
 
 Type Course
     searchType As String

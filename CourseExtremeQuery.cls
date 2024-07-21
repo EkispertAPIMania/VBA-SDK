@@ -76,182 +76,11 @@ Public Function Find() As ResultSet
         Exit Function
     End If
     m_Client.SetArray dicCourses, Result, "Course"
-    Response.Courses = CreateCourses(dicCourses)
+    Response.Courses = m_Client.CreateCourses(dicCourses)
     Response.Success = True
     Find = Response
 
     ' Debug.Print JsonConverter.ConvertToJson(Result)
-End Function
-
-Function CreateCourses(dicCourses() As Dictionary) As Course()
-    Dim i As Long
-    Dim Courses() As Course
-    ReDim Courses(UBound(dicCourses) - 1) As Course
-    Dim dicPrices() As Dictionary
-    For i = 0 To UBound(dicCourses) - 1
-        Dim dicCourse As Dictionary
-        Set dicCourse = dicCourses(i)
-        Dim tCourse As Course
-        tCourse.SerializeData = dicCourse("SerializeData")
-        tCourse.dataType = dicCourse("dataType")
-        tCourse.searchType = dicCourse("searchType")
-        
-        ' Price
-        m_Client.SetArray dicPrices, dicCourse, "Price"
-        tCourse.Prices = CreatePrices(dicPrices)
-
-        ' Route
-        tCourse.Route = CreateRoute(dicCourse)
-        
-        ' Teiki
-        tCourse.Teiki = CreateTeiki(dicCourse)
-        Courses(i) = tCourse
-    Next i
-    CreateCourses = Courses
-End Function
-
-Function CreatePrices(dicPrices() As Dictionary) As Price()
-    Dim i As Long
-    Dim Prices() As Price
-    ReDim Prices(UBound(dicPrices) - 1) As Price
-    
-    Dim dicPrice As Dictionary
-    For i = 0 To UBound(dicPrices) - 1
-        Set dicPrice = dicPrices(i)
-        Dim tPrice As Price
-        tPrice.Oneway = CLng(dicPrice("Oneway"))
-        tPrice.RevisionStatus = dicPrice("RevisionStatus")
-        tPrice.Round = CLng(dicPrice("Round"))
-        tPrice.Type = dicPrice("Type")
-        tPrice.FareRevisionStatus = dicPrice("fareRevisionStatus")
-        tPrice.FromLineIndex = CLng(dicPrice("fromLineIndex"))
-        tPrice.Index = CLng(dicPrice("index"))
-        tPrice.Kind = dicPrice("kind")
-        tPrice.Selected = IIf(dicPrice("selected") = "true", True, False)
-        tPrice.ToLineIndex = CLng(dicPrice("toLineIndex"))
-        Prices(i) = tPrice
-    Next i
-    CreatePrices = Prices
-End Function
-
-Function CreateTeiki(dicCourse As Dictionary) As Teiki
-    Dim dicTeiki As Dictionary
-    Set dicTeiki = dicCourse("Teiki")
-    CreateTeiki.DisplayRoute = dicTeiki("DisplayRoute")
-    CreateTeiki.SerializeData = dicTeiki("SerializeData")
-End Function
-
-Function CreateRoute(dicCourse As Dictionary) As Route
-    Dim dicRoute As Dictionary
-    Set dicRoute = dicCourse("Route")
-    CreateRoute.distance = dicRoute("distance")
-    CreateRoute.exhaustCO2 = dicRoute("exhaustCO2")
-    CreateRoute.exhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
-    CreateRoute.timeOnBoard = dicRoute("timeOnBoard")
-    CreateRoute.timeOther = dicRoute("timeOther")
-    CreateRoute.timeWalk = dicRoute("timeWalk")
-    CreateRoute.transferCount = dicRoute("transferCount")
-    ' Point
-    Dim dicPoints() As Dictionary
-    m_Client.SetArray dicPoints, dicRoute, "Point"
-    CreateRoute.Points = CreatePoints(dicPoints)
-    
-    ' Line
-    Dim dicLines() As Dictionary
-    m_Client.SetArray dicLines, dicRoute, "Line"
-    
-    CreateRoute.Lines = CreateLines(dicLines)
-End Function
-
-Function CreateLines(dicLines() As Dictionary) As Line()
-    Dim i As Long
-    Dim Lines() As Line
-    ReDim Lines(UBound(dicLines) - 1) As Line
-    
-    Dim dicLine As Dictionary
-    For i = 0 To UBound(dicLines) - 1
-        Set dicLine = dicLines(i)
-        
-        Lines(i) = CreateLine(dicLine)
-    Next i
-    CreateLines = Lines
-End Function
-
-Function CreateLine(dicLine As Dictionary) As Line
-    Dim dicArrivalState As Dictionary
-    Set dicArrivalState = dicLine("ArrivalState")
-    Dim dicDateTime As Dictionary
-    Set dicDateTime = dicArrivalState("Datetime")
-    Dim DateTime As DateTime
-    DateTime.operation = dicDateTime("operation")
-    DateTime.text = dicDateTime("text")
-    Dim ArrivalState As ArrivalState
-    ArrivalState.DateTime = DateTime
-    ArrivalState.no = dicArrivalState("no")
-    ArrivalState.Type = dicArrivalState("Type")
-    CreateLine.ArrivalState = ArrivalState
-    
-    Dim dicDepartureState As Dictionary
-    Set dicDepartureState = dicLine("DepartureState")
-    Set dicDateTime = dicDepartureState("Datetime")
-    Dim DepartureState As DepartureState
-    DateTime.operation = dicDateTime("operation")
-    DateTime.text = dicDateTime("text")
-    DepartureState.DateTime = DateTime
-    DepartureState.isStarting = dicDepartureState("isStarting")
-    DepartureState.no = dicDepartureState("no")
-    DepartureState.Type = dicDepartureState("Type")
-    
-    
-    Dim dicLineSymbol As Dictionary
-    If dicLine.Exists("LineSymbol") Then
-        Set dicLineSymbol = dicLine("LineSymbol")
-        Dim LineSymbol As LineSymbol
-        LineSymbol.code = dicLineSymbol("code")
-        LineSymbol.Name = dicLineSymbol("Name")
-        CreateLine.LineSymbol = LineSymbol
-    End If
-    CreateLine.Color = dicLine("Color")
-    CreateLine.Destination = dicLine("Destination")
-    CreateLine.Name = dicLine("Name")
-    CreateLine.TimeReliability = dicLine("TimeReliability")
-    CreateLine.Type = dicLine("Type")
-    CreateLine.distance = CLng(dicLine("distance"))
-    CreateLine.exhaustCO2 = CLng(dicLine("exhaustCO2"))
-    CreateLine.exhaustCO2atPassengerCar = CLng(dicLine("exhaustCO2atPassengerCar"))
-    CreateLine.fareIndex = CLng(dicLine("fareIndex"))
-    CreateLine.stopStationCount = CLng(dicLine("stopStationCount"))
-    CreateLine.teiki1Index = CLng(dicLine("teiki1Index"))
-    CreateLine.teiki3Index = CLng(dicLine("teiki3Index"))
-    CreateLine.teiki6Index = CLng(dicLine("teiki6Index"))
-    CreateLine.timeOnBoard = CLng(dicLine("timeOnBoard"))
-    CreateLine.track = dicLine("track")
-    CreateLine.trainID = dicLine("trainID")
-
-End Function
-
-Function CreatePoints(dicPoints() As Dictionary) As Point()
-    Dim i As Long
-    Dim Points() As Point
-    ReDim Points(UBound(dicPoints) - 1) As Point
-    
-    Dim dicPoint As Dictionary
-    For i = 0 To UBound(dicPoints) - 1
-        Set dicPoint = dicPoints(i)
-        Dim tPoint As Point
-        Dim GeoPoint As Dictionary
-        Set GeoPoint = dicPoint("GeoPoint")
-        Dim Prefecture As Dictionary
-        Set Prefecture = dicPoint("Prefecture")
-        Dim Station As Dictionary
-        Set Station = dicPoint("Station")
-        
-        tPoint.GeoPoint = m_Client.CreateGeoPoint(GeoPoint)
-        tPoint.Prefecture = m_Client.CreatePrefecture(Prefecture)
-        tPoint.Station = m_Client.CreateStation(Station)
-        Points(i) = tPoint
-    Next i
-    CreatePoints = Points
 End Function
 
 Property Let Client(ByVal Client As Ekispert)
@@ -381,7 +210,7 @@ Public Property Let AddStop(ByVal value As Boolean)
     m_AddStop = value
 End Property
 
-Public Property Let GCS(ByVal value As GCSEnum)
+Public Property Let Gcs(ByVal value As GCSEnum)
     m_Gcs = value
 End Property
 

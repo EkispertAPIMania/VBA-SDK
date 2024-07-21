@@ -55,6 +55,12 @@ Function CourseExtremeQuery() As CourseExtremeQuery
     CourseExtremeQuery.Client = Me
 End Function
 
+' 経路探索クエリーオブジェクトを返す
+Function CoursePlainQuery() As CoursePlainQuery
+    Set CoursePlainQuery = New CoursePlainQuery
+    CoursePlainQuery.Client = Me
+End Function
+
 Property Get Url() As String
     If m_Secure = True Then
         Url = "https"
@@ -115,6 +121,212 @@ Property Get Success() As Boolean
     Success = m_Success
 End Property
 
+Function CreateCourses(dicCourses() As Dictionary) As Course()
+    Dim i As Long
+    Dim Courses() As Course
+    ReDim Courses(UBound(dicCourses) - 1) As Course
+    Dim dicPrices() As Dictionary
+    For i = 0 To UBound(dicCourses) - 1
+        Dim dicCourse As Dictionary
+        Set dicCourse = dicCourses(i)
+        Dim tCourse As Course
+        tCourse.SerializeData = dicCourse("SerializeData")
+        tCourse.dataType = dicCourse("dataType")
+        tCourse.searchType = dicCourse("searchType")
+        
+        ' Price
+        SetArray dicPrices, dicCourse, "Price"
+        tCourse.Prices = CreatePrices(dicPrices)
+
+        ' Route
+        tCourse.Route = CreateRoute(dicCourse)
+        
+        ' Teiki
+        tCourse.Teiki = CreateTeiki(dicCourse)
+        Courses(i) = tCourse
+    Next i
+    CreateCourses = Courses
+End Function
+
+Sub LngOrDict(var As Variant, ByRef num As Long, ByRef dic As Dictionary)
+        If IsNumeric(var) Then
+           num = CLng(var)
+        Else
+            num = -1
+            Set dic = var
+        End If
+End Sub
+
+Function CreatePrices(dicPrices() As Dictionary) As Price()
+    Dim i As Long
+    Dim Prices() As Price
+    ReDim Prices(UBound(dicPrices) - 1) As Price
+    Dim num As Long
+    Dim dicOneway As Dictionary
+    Dim dicRound As Dictionary
+    Dim OnewayRemark As Remark
+    Dim RoundRemark As Remark
+    
+    Dim dicPrice As Dictionary
+    For i = 0 To UBound(dicPrices) - 1
+        Set dicPrice = dicPrices(i)
+        Dim tPrice As Price
+        
+        LngOrDict dicPrice("Oneway"), num, dicOneway
+        If num <> -1 Then
+            tPrice.Oneway = num
+        Else
+            OnewayRemark.Text = CLng(dicOneway("text"))
+            OnewayRemark.Remark = dicOneway("remark")
+            OnewayRemark.FullRemark = dicOneway("fullRemark")
+            tPrice.OnewayRemark = OnewayRemark
+        End If
+        
+        tPrice.RevisionStatus = dicPrice("RevisionStatus")
+        LngOrDict dicPrice("Round"), num, dicRound
+        If num <> -1 Then
+            tPrice.Round = num
+        Else
+            RoundRemark.Text = CLng(dicRound("text"))
+            RoundRemark.Remark = dicRound("remark")
+            RoundRemark.FullRemark = dicRound("fullRemark")
+            tPrice.RoundRemark = RoundRemark
+        End If
+        tPrice.Type = dicPrice("Type")
+        tPrice.FareRevisionStatus = dicPrice("fareRevisionStatus")
+        tPrice.FromLineIndex = CLng(dicPrice("fromLineIndex"))
+        tPrice.Index = CLng(dicPrice("index"))
+        tPrice.Kind = dicPrice("kind")
+        tPrice.Selected = IIf(dicPrice("selected") = "true", True, False)
+        tPrice.ToLineIndex = CLng(dicPrice("toLineIndex"))
+        Prices(i) = tPrice
+    Next i
+    CreatePrices = Prices
+End Function
+
+Function CreateTeiki(dicCourse As Dictionary) As Teiki
+    Dim dicTeiki As Dictionary
+    If dicCourse.Exists("Teiki") Then
+        Set dicTeiki = dicCourse("Teiki")
+        CreateTeiki.DisplayRoute = dicTeiki("DisplayRoute")
+        CreateTeiki.SerializeData = dicTeiki("SerializeData")
+    End If
+End Function
+
+Function CreateRoute(dicCourse As Dictionary) As Route
+    Dim dicRoute As Dictionary
+    Set dicRoute = dicCourse("Route")
+    CreateRoute.distance = dicRoute("distance")
+    CreateRoute.exhaustCO2 = dicRoute("exhaustCO2")
+    CreateRoute.exhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
+    CreateRoute.timeOnBoard = dicRoute("timeOnBoard")
+    CreateRoute.timeOther = dicRoute("timeOther")
+    CreateRoute.timeWalk = dicRoute("timeWalk")
+    CreateRoute.transferCount = dicRoute("transferCount")
+    ' Point
+    Dim dicPoints() As Dictionary
+    SetArray dicPoints, dicRoute, "Point"
+    CreateRoute.Points = CreatePoints(dicPoints)
+    
+    ' Line
+    Dim dicLines() As Dictionary
+    SetArray dicLines, dicRoute, "Line"
+    
+    CreateRoute.Lines = CreateLines(dicLines)
+End Function
+
+Function CreateLines(dicLines() As Dictionary) As Line()
+    Dim i As Long
+    Dim Lines() As Line
+    ReDim Lines(UBound(dicLines) - 1) As Line
+    
+    Dim dicLine As Dictionary
+    For i = 0 To UBound(dicLines) - 1
+        Set dicLine = dicLines(i)
+        
+        Lines(i) = CreateLine(dicLine)
+    Next i
+    CreateLines = Lines
+End Function
+
+Function CreateLine(dicLine As Dictionary) As Line
+    Dim dicArrivalState As Dictionary
+    Set dicArrivalState = dicLine("ArrivalState")
+    Dim dicDateTime As Dictionary
+    Set dicDateTime = dicArrivalState("Datetime")
+    Dim DateTime As DateTime
+    DateTime.operation = dicDateTime("operation")
+    DateTime.Text = dicDateTime("text")
+    Dim ArrivalState As ArrivalState
+    ArrivalState.DateTime = DateTime
+    ArrivalState.no = dicArrivalState("no")
+    ArrivalState.Type = dicArrivalState("Type")
+    CreateLine.ArrivalState = ArrivalState
+    
+    Dim dicDepartureState As Dictionary
+    Set dicDepartureState = dicLine("DepartureState")
+    Set dicDateTime = dicDepartureState("Datetime")
+    Dim DepartureState As DepartureState
+    DateTime.operation = dicDateTime("operation")
+    DateTime.Text = dicDateTime("text")
+    DepartureState.DateTime = DateTime
+    DepartureState.isStarting = dicDepartureState("isStarting")
+    DepartureState.no = dicDepartureState("no")
+    DepartureState.Type = dicDepartureState("Type")
+    
+    
+    Dim dicLineSymbol As Dictionary
+    If dicLine.Exists("LineSymbol") Then
+        Set dicLineSymbol = dicLine("LineSymbol")
+        Dim LineSymbol As LineSymbol
+        LineSymbol.code = dicLineSymbol("code")
+        LineSymbol.Name = dicLineSymbol("Name")
+        CreateLine.LineSymbol = LineSymbol
+    End If
+    CreateLine.Color = dicLine("Color")
+    CreateLine.Destination = dicLine("Destination")
+    CreateLine.Name = dicLine("Name")
+    CreateLine.TimeReliability = dicLine("TimeReliability")
+    CreateLine.Type = dicLine("Type")
+    CreateLine.distance = CLng(dicLine("distance"))
+    CreateLine.exhaustCO2 = CLng(dicLine("exhaustCO2"))
+    CreateLine.exhaustCO2atPassengerCar = CLng(dicLine("exhaustCO2atPassengerCar"))
+    CreateLine.fareIndex = CLng(dicLine("fareIndex"))
+    CreateLine.stopStationCount = CLng(dicLine("stopStationCount"))
+    CreateLine.teiki1Index = CLng(dicLine("teiki1Index"))
+    CreateLine.teiki3Index = CLng(dicLine("teiki3Index"))
+    CreateLine.teiki6Index = CLng(dicLine("teiki6Index"))
+    CreateLine.timeOnBoard = CLng(dicLine("timeOnBoard"))
+    CreateLine.track = dicLine("track")
+    CreateLine.trainID = dicLine("trainID")
+
+End Function
+
+Function CreatePoints(dicPoints() As Dictionary) As Point()
+    Dim i As Long
+    Dim Points() As Point
+    ReDim Points(UBound(dicPoints) - 1) As Point
+    
+    Dim dicPoint As Dictionary
+    For i = 0 To UBound(dicPoints) - 1
+        Set dicPoint = dicPoints(i)
+        Dim tPoint As Point
+        Dim GeoPoint As Dictionary
+        Set GeoPoint = dicPoint("GeoPoint")
+        Dim Prefecture As Dictionary
+        Set Prefecture = dicPoint("Prefecture")
+        Dim Station As Dictionary
+        Set Station = dicPoint("Station")
+        
+        tPoint.GeoPoint = CreateGeoPoint(GeoPoint)
+        tPoint.Prefecture = CreatePrefecture(Prefecture)
+        tPoint.Station = CreateStation(Station)
+        Points(i) = tPoint
+    Next i
+    CreatePoints = Points
+End Function
+
+
 Function CreateStation(dicStation As Dictionary) As Station
     Dim dicType As Dictionary
     If dicStation.Exists("code") = True Then
@@ -132,7 +344,7 @@ Function CreateStation(dicStation As Dictionary) As Station
     If dicStation.Exists("Type") = True Then
         If VarType(dicStation("Type")) = VbVarType.vbString Then
             Dim tTransportType As TransportType
-            tTransportType.text = dicStation("Type")
+            tTransportType.Text = dicStation("Type")
             CreateStation.TransportType = tTransportType
         Else
             Set dicType = dicStation("Type")
@@ -144,7 +356,7 @@ End Function
 ' GeoPoint構造体の作成
 Function CreateGeoPoint(dicGeoPoint As Dictionary) As GeoPoint
     If dicGeoPoint.Exists("gcs") = True Then
-        CreateGeoPoint.GCS = dicGeoPoint("gcs")
+        CreateGeoPoint.Gcs = dicGeoPoint("gcs")
     End If
     If dicGeoPoint.Exists("lati_d") = True Then
         CreateGeoPoint.Latitude_DD = dicGeoPoint("lati_d")
@@ -174,7 +386,7 @@ End Function
 
 Function CreateTransportType(dictType As Dictionary) As TransportType
     If dictType.Exists("text") = True Then
-        CreateTransportType.text = dictType("text")
+        CreateTransportType.Text = dictType("text")
     End If
     If dictType.Exists("detail") = True Then
         CreateTransportType.Detail = dictType("detail")
