@@ -41,7 +41,7 @@ Private m_Client As Ekispert
 Private Sub Class_Initialize()
     m_ExcludeSameLineStation = False
     m_Date = Now
-    m_SearchType = Plain
+    m_SearchType = Departure
     m_Sort = Ekispert
     
     m_AnswerCount = 5
