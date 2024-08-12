@@ -89,7 +89,7 @@ End Property
 
 Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
     ReDim Preserve m_TransportType(i) As String
-     m_TransportType(i) = m_Client.GetTransportType(TransportType)
+    m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
 Property Let PrefectureCode(i As Long, code As PrefectureEnum)

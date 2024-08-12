@@ -32,6 +32,12 @@ Type Station
     Gate() As Gate
 End Type
 
+Type Cost
+    Minute As Long
+    TransferCount As Long
+    BaseIndex As Long
+End Type
+
 Type Point
     GetOn As Boolean
     GetOff As Boolean
@@ -40,6 +46,7 @@ Type Point
     GeoPoint As GeoPoint
     Prefecture As Prefecture
     Station As Station
+    Cost As Cost
 End Type
 
 Type EkispertError
@@ -130,7 +137,7 @@ Type Route
     exhaustCO2atPassengerCar As String
     distance As String
     timeWalk As String
-    transferCount As String
+    TransferCount As String
     Lines() As Line
     Points() As Point
 End Type
@@ -144,12 +151,17 @@ Type Course
     Route As Route
 End Type
 
+Type Base
+    Point As Point
+End Type
+
 Type ResultSet
     Max As Long
     Offset As Long
     RoundTripType As String
     Points() As Point
     Courses() As Course
+    Base As Base
     Success As Boolean
     Error As EkispertError
 End Type

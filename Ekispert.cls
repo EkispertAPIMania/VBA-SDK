@@ -61,6 +61,18 @@ Function CoursePlainQuery() As CoursePlainQuery
     CoursePlainQuery.Client = Me
 End Function
 
+' 緯度経度からの周辺駅検索クエリーオブジェクトを返す
+Function GeoStationQuery() As GeoStationQuery
+    Set GeoStationQuery = New GeoStationQuery
+    GeoStationQuery.Client = Me
+End Function
+
+Function SearchMultipleRangeQuery() As SearchMultipleRangeQuery
+    Set SearchMultipleRangeQuery = New SearchMultipleRangeQuery
+    SearchMultipleRangeQuery.Client = Me
+End Function
+
+
 Property Get Url() As String
     If m_Secure = True Then
         Url = "https"
@@ -124,9 +136,9 @@ End Property
 Function CreateCourses(dicCourses() As Dictionary) As Course()
     Dim i As Long
     Dim Courses() As Course
-    ReDim Courses(UBound(dicCourses) - 1) As Course
+    ReDim Courses(UBound(dicCourses)) As Course
     Dim dicPrices() As Dictionary
-    For i = 0 To UBound(dicCourses) - 1
+    For i = 0 To UBound(dicCourses)
         Dim dicCourse As Dictionary
         Set dicCourse = dicCourses(i)
         Dim tCourse As Course
@@ -160,7 +172,7 @@ End Sub
 Function CreatePrices(dicPrices() As Dictionary) As Price()
     Dim i As Long
     Dim Prices() As Price
-    ReDim Prices(UBound(dicPrices) - 1) As Price
+    ReDim Prices(UBound(dicPrices)) As Price
     Dim num As Long
     Dim dicOneway As Dictionary
     Dim dicRound As Dictionary
@@ -168,7 +180,7 @@ Function CreatePrices(dicPrices() As Dictionary) As Price()
     Dim RoundRemark As Remark
     
     Dim dicPrice As Dictionary
-    For i = 0 To UBound(dicPrices) - 1
+    For i = 0 To UBound(dicPrices)
         Set dicPrice = dicPrices(i)
         Dim tPrice As Price
         
@@ -222,7 +234,7 @@ Function CreateRoute(dicCourse As Dictionary) As Route
     CreateRoute.timeOnBoard = dicRoute("timeOnBoard")
     CreateRoute.timeOther = dicRoute("timeOther")
     CreateRoute.timeWalk = dicRoute("timeWalk")
-    CreateRoute.transferCount = dicRoute("transferCount")
+    CreateRoute.TransferCount = dicRoute("transferCount")
     ' Point
     Dim dicPoints() As Dictionary
     SetArray dicPoints, dicRoute, "Point"
@@ -238,10 +250,10 @@ End Function
 Function CreateLines(dicLines() As Dictionary) As Line()
     Dim i As Long
     Dim Lines() As Line
-    ReDim Lines(UBound(dicLines) - 1) As Line
+    ReDim Lines(UBound(dicLines)) As Line
     
     Dim dicLine As Dictionary
-    For i = 0 To UBound(dicLines) - 1
+    For i = 0 To UBound(dicLines)
         Set dicLine = dicLines(i)
         
         Lines(i) = CreateLine(dicLine)
@@ -305,27 +317,38 @@ End Function
 Function CreatePoints(dicPoints() As Dictionary) As Point()
     Dim i As Long
     Dim Points() As Point
-    ReDim Points(UBound(dicPoints) - 1) As Point
+    ReDim Points(UBound(dicPoints)) As Point
     
     Dim dicPoint As Dictionary
-    For i = 0 To UBound(dicPoints) - 1
+    For i = 0 To UBound(dicPoints)
         Set dicPoint = dicPoints(i)
-        Dim tPoint As Point
-        Dim GeoPoint As Dictionary
-        Set GeoPoint = dicPoint("GeoPoint")
-        Dim Prefecture As Dictionary
-        Set Prefecture = dicPoint("Prefecture")
-        Dim Station As Dictionary
-        Set Station = dicPoint("Station")
-        
-        tPoint.GeoPoint = CreateGeoPoint(GeoPoint)
-        tPoint.Prefecture = CreatePrefecture(Prefecture)
-        tPoint.Station = CreateStation(Station)
-        Points(i) = tPoint
+        Points(i) = CreatePoint(dicPoint)
     Next i
     CreatePoints = Points
 End Function
 
+Function CreatePoint(dicPoint As Dictionary) As Point
+    If dicPoint.Exists("GeoPoint") = True Then
+        Dim GeoPoint As Dictionary
+        Set GeoPoint = dicPoint("GeoPoint")
+        CreatePoint.GeoPoint = CreateGeoPoint(GeoPoint)
+    End If
+    If dicPoint.Exists("Prefecture") = True Then
+        Dim Prefecture As Dictionary
+        Set Prefecture = dicPoint("Prefecture")
+        CreatePoint.Prefecture = CreatePrefecture(Prefecture)
+    End If
+    If dicPoint.Exists("Station") = True Then
+        Dim Station As Dictionary
+        Set Station = dicPoint("Station")
+        CreatePoint.Station = CreateStation(Station)
+    End If
+    If dicPoint.Exists("Cost") = True Then
+        Dim Cost As Dictionary
+        Set Cost = dicPoint("Cost")
+        CreatePoint.Cost = CreateCost(Cost)
+    End If
+End Function
 
 Function CreateStation(dicStation As Dictionary) As Station
     Dim dicType As Dictionary
@@ -350,6 +373,26 @@ Function CreateStation(dicStation As Dictionary) As Station
             Set dicType = dicStation("Type")
             CreateStation.TransportType = CreateTransportType(dicType)
         End If
+    End If
+End Function
+
+Function CreateCost(dicCost As Dictionary) As Cost
+    If dicCost.Exists("Minute") = True Then
+        CreateCost.Minute = CLng(dicCost("Minute"))
+    End If
+    If dicCost.Exists("TransferCount") = True Then
+        CreateCost.TransferCount = CLng(dicCost("TransferCount"))
+    End If
+    If dicCost.Exists("baseIndex") = True Then
+        CreateCost.BaseIndex = CLng(dicCost("baseIndex"))
+    End If
+End Function
+
+Function CreateBase(dicBase As Dictionary) As Base
+    Dim dicPoint As Dictionary
+    If dicBase.Exists("Point") Then
+        Set dicPoint = dicBase("Point")
+        CreateBase.Point = CreatePoint(dicPoint)
     End If
 End Function
 
