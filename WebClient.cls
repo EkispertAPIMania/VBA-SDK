@@ -314,7 +314,7 @@ Public Function Execute(Request As WebRequest) As WebResponse
 
 #Else
     Set web_Http = Me.PrepareHttpRequest(Request)
-    Debug.Print Request.Body
+    ' Debug.Print Request.Body
     web_Http.Send Request.Body
     Do While Not web_Http.WaitForResponse(0.025)
         VBA.DoEvents

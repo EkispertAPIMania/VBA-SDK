@@ -110,7 +110,7 @@ Public Property Let DateProp(ByVal value As Date)
     m_Date = value
 End Property
 
-Public Property Let SearchType(ByVal value As SearchTypeEnum)
+Public Property Let searchType(ByVal value As SearchTypeEnum)
     m_SearchType = value
 End Property
 

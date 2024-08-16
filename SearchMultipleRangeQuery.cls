@@ -49,10 +49,10 @@ Public Function Find() As ResultSet
         m_Client.SetArray dicPoints, Result, "Point"
         Response.Points = m_Client.CreatePoints(dicPoints)
     End If
-    Dim dicBase As Dictionary
+    Dim dicBases() As Dictionary
     If Result.Exists("Base") = True Then
-        Set dicBase = Result("Base")
-        Response.Base = m_Client.CreateBase(dicBase)
+        m_Client.SetArray dicBases, Result, "Base"
+        Response.Bases = m_Client.CreateBases(dicBases)
     End If
     
     Response.Success = True

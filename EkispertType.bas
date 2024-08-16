@@ -46,7 +46,7 @@ Type Point
     GeoPoint As GeoPoint
     Prefecture As Prefecture
     Station As Station
-    Cost As Cost
+    Costs() As Cost
 End Type
 
 Type EkispertError
@@ -161,7 +161,7 @@ Type ResultSet
     RoundTripType As String
     Points() As Point
     Courses() As Course
-    Base As Base
+    Bases() As Base
     Success As Boolean
     Error As EkispertError
 End Type

@@ -104,7 +104,7 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     DirectionsRequest.Resource = ApiPath & "?" & Join(QueryString, "&")
     Dim Response As WebResponse
     Set Response = Client.Execute(DirectionsRequest)
-    Debug.Print Client.GetFullUrl(DirectionsRequest)
+    ' Debug.Print Client.GetFullUrl(DirectionsRequest)
     
     If Response.StatusCode <> WebStatusCode.Ok Then
         Dim Error As Dictionary
@@ -344,9 +344,9 @@ Function CreatePoint(dicPoint As Dictionary) As Point
         CreatePoint.Station = CreateStation(Station)
     End If
     If dicPoint.Exists("Cost") = True Then
-        Dim Cost As Dictionary
-        Set Cost = dicPoint("Cost")
-        CreatePoint.Cost = CreateCost(Cost)
+        Dim dicCosts() As Dictionary
+        SetArray dicCosts, dicPoint, "Cost"
+        CreatePoint.Costs = CreateCosts(dicCosts)
     End If
 End Function
 
@@ -376,6 +376,19 @@ Function CreateStation(dicStation As Dictionary) As Station
     End If
 End Function
 
+Function CreateCosts(dicCosts() As Dictionary) As Cost()
+    Dim i As Long
+    Dim Costs() As Cost
+    ReDim Costs(UBound(dicCosts)) As Cost
+    
+    Dim dicCost As Dictionary
+    For i = 0 To UBound(dicCosts)
+        Set dicCost = dicCosts(i)
+        Costs(i) = CreateCost(dicCost)
+    Next i
+    CreateCosts = Costs
+End Function
+
 Function CreateCost(dicCost As Dictionary) As Cost
     If dicCost.Exists("Minute") = True Then
         CreateCost.Minute = CLng(dicCost("Minute"))
@@ -386,6 +399,20 @@ Function CreateCost(dicCost As Dictionary) As Cost
     If dicCost.Exists("baseIndex") = True Then
         CreateCost.BaseIndex = CLng(dicCost("baseIndex"))
     End If
+End Function
+
+Function CreateBases(dicBases() As Dictionary) As Base()
+    Dim i As Long
+    Dim Bases() As Base
+    Debug.Print UBound(dicBases)
+    ReDim Bases(UBound(dicBases)) As Base
+    
+    Dim dicBase As Dictionary
+    For i = 0 To UBound(dicBases)
+        Set dicBase = dicBases(i)
+        Bases(i) = CreateBase(dicBase)
+    Next i
+    CreateBases = Bases
 End Function
 
 Function CreateBase(dicBase As Dictionary) As Base
@@ -469,7 +496,7 @@ On Error GoTo NotArray
     Exit Sub
 NotArray:
     ' îzóÒÇ∂Ç·Ç»Ç¢èÍçá
-    ReDim ary(1) As Dictionary
+    ReDim ary(0) As Dictionary
     Set ary(0) = Data(Key)
 End Sub
 
