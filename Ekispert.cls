@@ -72,6 +72,11 @@ Function SearchMultipleRangeQuery() As SearchMultipleRangeQuery
     SearchMultipleRangeQuery.Client = Me
 End Function
 
+Function CourseRepaymentQuery() As CourseRepaymentQuery
+    Set CourseRepaymentQuery = New CourseRepaymentQuery
+    CourseRepaymentQuery.Client = Me
+End Function
+
 
 Property Get Url() As String
     If m_Secure = True Then
@@ -247,6 +252,94 @@ Function CreateRoute(dicCourse As Dictionary) As Route
     CreateRoute.Lines = CreateLines(dicLines)
 End Function
 
+Function CreateRepaymentList(Result As Dictionary) As RepaymentList
+    CreateRepaymentList.BuyDate = CDate(Result("buyDate"))
+    CreateRepaymentList.RepaymentDate = CDate(Result("repaymentDate"))
+    CreateRepaymentList.StartDate = CDate(Result("startDate"))
+    CreateRepaymentList.ValidityPeriod = CLng(Result("validityPeriod"))
+    
+    Dim dicRepaymentTickets() As Dictionary
+    SetArray dicRepaymentTickets, Result, "RepaymentTicket"
+    CreateRepaymentList.RepaymentTickets = CreateRepaymentTickets(dicRepaymentTickets)
+End Function
+
+Function CreateRepaymentTickets(dicRepaymentTickets() As Dictionary) As RepaymentTicket()
+    Dim i As Long
+    Dim RepaymentTickets() As RepaymentTicket
+    ReDim RepaymentTickets(UBound(dicRepaymentTickets)) As RepaymentTicket
+    
+    Dim dicRepaymentTicket As Dictionary
+    For i = 0 To UBound(dicRepaymentTickets)
+        Set dicRepaymentTicket = dicRepaymentTickets(i)
+        RepaymentTickets(i) = CreateRepaymentTicket(dicRepaymentTicket)
+    Next i
+    CreateRepaymentTickets = RepaymentTickets
+End Function
+
+Function CreateRepaymentTicket(dicRepaymentTicket As Dictionary) As RepaymentTicket
+    CreateRepaymentTicket.CalculateTarget = IIf(UCase(dicRepaymentTicket("calculateTarget")) = "TRUE", True, False)
+    CreateRepaymentTicket.ChangeableSection = IIf(UCase(dicRepaymentTicket("changeableSection")) = "TRUE", True, False)
+    CreateRepaymentTicket.FeePriceValue = CLng(dicRepaymentTicket("feePriceValue"))
+    CreateRepaymentTicket.FromTeikiRouteSectionIndex = CLng(dicRepaymentTicket("fromTeikiRouteSectionIndex"))
+    CreateRepaymentTicket.PayPriceValue = CLng(dicRepaymentTicket("payPriceValue"))
+    CreateRepaymentTicket.RepayPriceValue = CLng(dicRepaymentTicket("repayPriceValue"))
+    CreateRepaymentTicket.State = CLng(dicRepaymentTicket("state"))
+    CreateRepaymentTicket.ToTeikiRouteSectionIndex = CLng(dicRepaymentTicket("toTeikiRouteSectionIndex"))
+    CreateRepaymentTicket.UsedPriceValue = CLng(dicRepaymentTicket("usedPriceValue"))
+    CreateRepaymentTicket.ValidityPeriod = CLng(dicRepaymentTicket("validityPeriod"))
+End Function
+
+Function CreateTeikiRoute(dicTeikiRoute As Dictionary) As TeikiRoute
+    If dicTeikiRoute.Exists("SectionSeparator") Then
+        Dim SectionSeparators() As Dictionary
+        SetArray SectionSeparators, dicTeikiRoute, "SectionSeparator"
+        CreateTeikiRoute.SectionSeparators = CreateSectionSeparators(SectionSeparators)
+    End If
+    If dicTeikiRoute.Exists("TeikiRouteSection") Then
+        Dim TeikiRouteSections() As Dictionary
+        SetArray TeikiRouteSections, dicTeikiRoute, "TeikiRouteSection"
+        CreateTeikiRoute.TeikiRouteSections = CreateTeikiRouteSections(TeikiRouteSections)
+    End If
+End Function
+
+Function CreateTeikiRouteSections(dicTeikiRouteSections() As Dictionary) As TeikiRouteSection()
+    Dim i As Long
+    Dim TeikiRouteSections() As TeikiRouteSection
+    ReDim TeikiRouteSections(UBound(dicTeikiRouteSections)) As TeikiRouteSection
+    
+    Dim dicTeikiRouteSection As Dictionary
+    For i = 0 To UBound(dicTeikiRouteSections)
+        Set dicTeikiRouteSection = dicTeikiRouteSections(i)
+        TeikiRouteSections(i) = CreateTeikiRouteSection(dicTeikiRouteSection)
+    Next i
+    CreateTeikiRouteSections = TeikiRouteSections
+End Function
+
+Function CreateTeikiRouteSection(dicTeikiRouteSection As Dictionary) As TeikiRouteSection
+    CreateTeikiRouteSection.RepaymentTicketIndex = CLng(dicTeikiRouteSection("repaymentTicketIndex"))
+    Dim Points() As Dictionary
+    SetArray Points, dicTeikiRouteSection, "Point"
+    CreateTeikiRouteSection.Points = CreatePoints(Points)
+End Function
+
+Function CreateSectionSeparators(dictSectionSeparators) As SectionSeparator()
+    Dim i As Long
+    Dim SectionSeparators() As SectionSeparator
+    ReDim SectionSeparators(UBound(dictSectionSeparators)) As SectionSeparator
+    
+    Dim dicSectionSeparator As Dictionary
+    For i = 0 To UBound(dicLines)
+        Set dicSectionSeparator = dicSectionSeparators(i)
+        SectionSeparators(i) = CreateSectionSeparator(dicSectionSeparator)
+    Next i
+    CreateSectionSeparators = SectionSeparators
+End Function
+
+Function CreateSectionSeparator(dicSectionSeparator As Dictionary) As SectionSeparator
+    CreateSectionSeparator.Changeable = IIf(UCase(dicSectionSeparator("changeable")) = "TRUE", True, False)
+    CreateSectionSeparator.Divided = IIf(UCase(dicSectionSeparator("divided")) = "TRUE", True, False)
+End Function
+
 Function CreateLines(dicLines() As Dictionary) As Line()
     Dim i As Long
     Dim Lines() As Line
@@ -404,7 +497,7 @@ End Function
 Function CreateBases(dicBases() As Dictionary) As Base()
     Dim i As Long
     Dim Bases() As Base
-    Debug.Print UBound(dicBases)
+    ' Debug.Print UBound(dicBases)
     ReDim Bases(UBound(dicBases)) As Base
     
     Dim dicBase As Dictionary

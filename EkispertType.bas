@@ -155,6 +155,44 @@ Type Base
     Point As Point
 End Type
 
+Type RepaymentTicket
+    FeePriceValue As Long
+    RepayPriceValue As Long
+    State As Long
+    UsedPriceValue As Long
+    CalculateTarget As Boolean
+    ToTeikiRouteSectionIndex As Long
+    FromTeikiRouteSectionIndex As Long
+    ValidityPeriod As Long
+    PayPriceValue As Long
+    ChangeableSection As Boolean
+End Type
+
+Type SectionSeparator
+    Divided As Boolean
+    Changeable As Boolean
+End Type
+
+Type TeikiRouteSection
+    RepaymentTicketIndex As Long
+    Points() As Point
+End Type
+
+
+Type TeikiRoute
+    SectionSeparators() As SectionSeparator
+    TeikiRouteSections() As TeikiRouteSection
+End Type
+
+
+Type RepaymentList
+    RepaymentDate As Date
+    ValidityPeriod As Long
+    StartDate As Date
+    BuyDate As Date
+    RepaymentTickets() As RepaymentTicket
+End Type
+
 Type ResultSet
     Max As Long
     Offset As Long
@@ -162,6 +200,8 @@ Type ResultSet
     Points() As Point
     Courses() As Course
     Bases() As Base
+    RepaymentList As RepaymentList
+    TeikiRoute As TeikiRoute
     Success As Boolean
     Error As EkispertError
 End Type
