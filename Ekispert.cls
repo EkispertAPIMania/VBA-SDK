@@ -77,6 +77,10 @@ Function CourseRepaymentQuery() As CourseRepaymentQuery
     CourseRepaymentQuery.Client = Me
 End Function
 
+Function ToolboxCourseConditionQuery() As ToolboxCourseConditionQuery
+    Set ToolboxCourseConditionQuery = New ToolboxCourseConditionQuery
+    ToolboxCourseConditionQuery.Client = Me
+End Function
 
 Property Get Url() As String
     If m_Secure = True Then
@@ -127,7 +131,7 @@ Sub BuildError(Error As Dictionary)
     Dim e As Dictionary
     Set e = Error("Error")
     m_Error.code = e("code")
-    m_Error.Message = e("Message")
+    m_Error.Message = JsonConverter.ConvertToJson(e("Message"))
 End Sub
 
 Property Get Error() As EkispertError
@@ -562,6 +566,14 @@ Sub ArrayToString(ByRef dict As Dictionary, strKey As String, aryString() As Str
     End If
 End Sub
 
+Sub StringParam(ByRef dict As Dictionary, strKey As String, value As String)
+    If value <> "" Then
+        dict.Add strKey, value
+    End If
+End Sub
+
+
+
 Public Property Get GCSString(m_Gcs As GCSEnum) As String
     Select Case m_Gcs
     Case GCSEnum.Tokyo
@@ -617,3 +629,4 @@ Function GetTransportType(TransportType As TransportTypeEnum) As String
         GetTransportType = "bus.midnight"
     End Select
 End Function
+

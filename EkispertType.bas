@@ -204,6 +204,7 @@ Type ResultSet
     TeikiRoute As TeikiRoute
     Success As Boolean
     Error As EkispertError
+    Condition As String
 End Type
 
 Public Enum NameMatchTypeEnum
