@@ -120,8 +120,8 @@ Property Let OldName(ByVal OldName As String)
     m_OldName = OldName
 End Property
 
-Property Let code(ByVal code As Long)
-    m_Code = code
+Property Let Code(ByVal Code As Long)
+    m_Code = Code
 End Property
 
 Property Let CorporationName(ByVal CorporationName As String)
@@ -141,9 +141,9 @@ Property Let TransportType(i As Long, ByVal TransportType As TransportTypeEnum)
      m_TransportType(i) = m_Client.GetTransportType(TransportType)
 End Property
 
-Property Let PrefectureCode(i As Long, code As Integer)
+Property Let PrefectureCode(i As Long, Code As Integer)
     ReDim Preserve m_PrefectureCode(i) As String
-    m_PrefectureCode(i) = CStr(code)
+    m_PrefectureCode(i) = CStr(Code)
 End Property
 
 Property Let Offset(ByVal Offset As Integer)

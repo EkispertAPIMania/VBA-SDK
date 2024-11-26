@@ -113,7 +113,7 @@ Public Cookies As Collection
 ' @method Update
 ' @param Updated {WebResponse} Updated `WebResponse` to pull updated values from
 ''
-Public Sub Update(Updated As WebResponse)
+Public Sub update(Updated As WebResponse)
     Me.StatusCode = Updated.StatusCode
     Me.StatusDescription = Updated.StatusDescription
     Me.Content = Updated.Content

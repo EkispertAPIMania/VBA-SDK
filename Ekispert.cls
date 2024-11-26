@@ -82,6 +82,16 @@ Function ToolboxCourseConditionQuery() As ToolboxCourseConditionQuery
     ToolboxCourseConditionQuery.Client = Me
 End Function
 
+Function ToolboxCoursePointQuery() As ToolboxCoursePointQuery
+    Set ToolboxCoursePointQuery = New ToolboxCoursePointQuery
+    ToolboxCoursePointQuery.Client = Me
+End Function
+
+Function ToolboxCourseUpdateQuery() As ToolboxCourseUpdateQuery
+    Set ToolboxCourseUpdateQuery = New ToolboxCourseUpdateQuery
+    ToolboxCourseUpdateQuery.Client = Me
+End Function
+
 Property Get Url() As String
     If m_Secure = True Then
         Url = "https"
@@ -130,7 +140,7 @@ Sub BuildError(Error As Dictionary)
     m_Error.EngineVersion = Error("engineVersion")
     Dim e As Dictionary
     Set e = Error("Error")
-    m_Error.code = e("code")
+    m_Error.Code = e("code")
     m_Error.Message = JsonConverter.ConvertToJson(e("Message"))
 End Sub
 
@@ -237,10 +247,10 @@ End Function
 Function CreateRoute(dicCourse As Dictionary) As Route
     Dim dicRoute As Dictionary
     Set dicRoute = dicCourse("Route")
-    CreateRoute.distance = dicRoute("distance")
-    CreateRoute.exhaustCO2 = dicRoute("exhaustCO2")
-    CreateRoute.exhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
-    CreateRoute.timeOnBoard = dicRoute("timeOnBoard")
+    CreateRoute.Distance = dicRoute("distance")
+    CreateRoute.ExhaustCO2 = dicRoute("exhaustCO2")
+    CreateRoute.ExhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
+    CreateRoute.TimeOnBoard = dicRoute("timeOnBoard")
     CreateRoute.timeOther = dicRoute("timeOther")
     CreateRoute.timeWalk = dicRoute("timeWalk")
     CreateRoute.TransferCount = dicRoute("transferCount")
@@ -326,6 +336,62 @@ Function CreateTeikiRouteSection(dicTeikiRouteSection As Dictionary) As TeikiRou
     CreateTeikiRouteSection.Points = CreatePoints(Points)
 End Function
 
+Function CreateUpdates(dicUpdates() As Dictionary) As update()
+    Dim i As Long
+    Dim Updates() As update
+    ReDim Updates(UBound(dicUpdates)) As update
+    
+    Dim dicUpdate As Dictionary
+    For i = 0 To UBound(dicUpdates)
+        Set dicUpdate = dicUpdates(i)
+        Updates(i) = CreateUpdate(dicUpdate)
+    Next i
+    CreateUpdates = Updates
+End Function
+
+Function CreateUpdate(dicUpdate As Dictionary) As update
+    CreateUpdate.Type = dicUpdate("Type")
+    
+    If dicUpdate.Exists("Point") Then
+        Dim Points() As Dictionary
+        SetArray Points, dicUpdate, "Point"
+        CreateUpdate.Points = CreatePoints(Points)
+    End If
+    
+    If dicUpdate.Exists("Line") Then
+        Dim Lines() As Dictionary
+        SetArray Lines, dicUpdate, "Line"
+        CreateUpdate.Lines = CreateLines(Lines)
+    End If
+    
+    If dicUpdate.Exists("Corporation") Then
+        Dim Corporations() As Dictionary
+        SetArray Corporations, dicUpdate, "Corporation"
+        CreateUpdate.Corporations = CreateCorporations(Corporations)
+    End If
+End Function
+
+Function CreateCorporations(dicCorporations() As Dictionary) As Corporation()
+    Dim i As Long
+    Dim Corporations() As Corporation
+    ReDim Corporations(UBound(dicCorporations)) As Corporation
+    
+    Dim dicCorporation As Dictionary
+    For i = 0 To UBound(dicCorporations)
+        Set dicCorporation = dicCorporations(i)
+        Corporations(i) = CreateCorporation(dicCorporation)
+    Next i
+    CreateCorporations = Corporations
+End Function
+
+Function CreateCorporation(dicCorporation As Dictionary) As Corporation
+    CreateCorporation.Status = CreateStatus(dicCorporation("Status"))
+    CreateCorporation.Code = dicCorporation("code")
+    CreateCorporation.Name = dicCorporation("Name")
+    CreateCorporation.OldName = dicCorporation("OldName")
+End Function
+
+
 Function CreateSectionSeparators(dictSectionSeparators) As SectionSeparator()
     Dim i As Long
     Dim SectionSeparators() As SectionSeparator
@@ -359,36 +425,40 @@ Function CreateLines(dicLines() As Dictionary) As Line()
 End Function
 
 Function CreateLine(dicLine As Dictionary) As Line
-    Dim dicArrivalState As Dictionary
-    Set dicArrivalState = dicLine("ArrivalState")
-    Dim dicDateTime As Dictionary
-    Set dicDateTime = dicArrivalState("Datetime")
-    Dim DateTime As DateTime
-    DateTime.operation = dicDateTime("operation")
-    DateTime.Text = dicDateTime("text")
-    Dim ArrivalState As ArrivalState
-    ArrivalState.DateTime = DateTime
-    ArrivalState.no = dicArrivalState("no")
-    ArrivalState.Type = dicArrivalState("Type")
-    CreateLine.ArrivalState = ArrivalState
+    If dicLine.Exists("ArrivalState") Then
+        Dim dicArrivalState As Dictionary
+        Set dicArrivalState = dicLine("ArrivalState")
+        Dim ArrivalState As ArrivalState
+        Dim dicDateTime As Dictionary
+        Set dicDateTime = dicArrivalState("Datetime")
+        Dim DateTime As DateTime
+        DateTime.Operation = dicDateTime("operation")
+        DateTime.Text = dicDateTime("text")
+        
+        ArrivalState.DateTime = DateTime
+        ArrivalState.No = dicArrivalState("no")
+        ArrivalState.Type = dicArrivalState("Type")
+        CreateLine.ArrivalState = ArrivalState
+    End If
     
-    Dim dicDepartureState As Dictionary
-    Set dicDepartureState = dicLine("DepartureState")
-    Set dicDateTime = dicDepartureState("Datetime")
-    Dim DepartureState As DepartureState
-    DateTime.operation = dicDateTime("operation")
-    DateTime.Text = dicDateTime("text")
-    DepartureState.DateTime = DateTime
-    DepartureState.isStarting = dicDepartureState("isStarting")
-    DepartureState.no = dicDepartureState("no")
-    DepartureState.Type = dicDepartureState("Type")
-    
+    If dicLine.Exists("DepartureState") Then
+        Dim dicDepartureState As Dictionary
+        Set dicDepartureState = dicLine("DepartureState")
+        Set dicDateTime = dicDepartureState("Datetime")
+        Dim DepartureState As DepartureState
+        DateTime.Operation = dicDateTime("operation")
+        DateTime.Text = dicDateTime("text")
+        DepartureState.DateTime = DateTime
+        DepartureState.isStarting = dicDepartureState("isStarting")
+        DepartureState.No = dicDepartureState("no")
+        DepartureState.Type = dicDepartureState("Type")
+    End If
     
     Dim dicLineSymbol As Dictionary
     If dicLine.Exists("LineSymbol") Then
         Set dicLineSymbol = dicLine("LineSymbol")
         Dim LineSymbol As LineSymbol
-        LineSymbol.code = dicLineSymbol("code")
+        LineSymbol.Code = dicLineSymbol("code")
         LineSymbol.Name = dicLineSymbol("Name")
         CreateLine.LineSymbol = LineSymbol
     End If
@@ -396,19 +466,38 @@ Function CreateLine(dicLine As Dictionary) As Line
     CreateLine.Destination = dicLine("Destination")
     CreateLine.Name = dicLine("Name")
     CreateLine.TimeReliability = dicLine("TimeReliability")
-    CreateLine.Type = dicLine("Type")
-    CreateLine.distance = CLng(dicLine("distance"))
-    CreateLine.exhaustCO2 = CLng(dicLine("exhaustCO2"))
-    CreateLine.exhaustCO2atPassengerCar = CLng(dicLine("exhaustCO2atPassengerCar"))
-    CreateLine.fareIndex = CLng(dicLine("fareIndex"))
-    CreateLine.stopStationCount = CLng(dicLine("stopStationCount"))
-    CreateLine.teiki1Index = CLng(dicLine("teiki1Index"))
-    CreateLine.teiki3Index = CLng(dicLine("teiki3Index"))
-    CreateLine.teiki6Index = CLng(dicLine("teiki6Index"))
-    CreateLine.timeOnBoard = CLng(dicLine("timeOnBoard"))
-    CreateLine.track = dicLine("track")
-    CreateLine.trainID = dicLine("trainID")
+    If dicLine.Exists("Type") Then
+        If VarType(dicLine("Type")) = vbString Then
+            CreateLine.Type.Text = dicLine("Type")
+        Else
+            Dim dicType As Dictionary
+            Set dicType = dicLine("Type")
+            CreateLine.Type.Text = dicType("text")
+            CreateLine.Type.Detail = dicType("detail")
+        End If
+    End If
+    CreateLine.Distance = CLng(dicLine("distance"))
+    CreateLine.ExhaustCO2 = CLng(dicLine("exhaustCO2"))
+    CreateLine.ExhaustCO2atPassengerCar = CLng(dicLine("exhaustCO2atPassengerCar"))
+    CreateLine.FareIndex = CLng(dicLine("fareIndex"))
+    CreateLine.StopStationCount = CLng(dicLine("stopStationCount"))
+    CreateLine.Teiki1Index = CLng(dicLine("teiki1Index"))
+    CreateLine.Teiki3Index = CLng(dicLine("teiki3Index"))
+    CreateLine.Teiki6Index = CLng(dicLine("teiki6Index"))
+    CreateLine.TimeOnBoard = CLng(dicLine("timeOnBoard"))
+    CreateLine.Track = dicLine("track")
+    CreateLine.TrainID = dicLine("trainID")
+    
+    If dicLine.Exists("Status") Then
+        CreateLine.Status = CreateStatus(dicLine("Status"))
+    End If
+    If dicLine.Exists("OldName") Then
+        CreateLine.OldName = dicLine("OldName")
+    End If
+End Function
 
+Function CreateStatus(dicStatus As Dictionary) As Status
+    CreateStatus.Code = dicStatus("code")
 End Function
 
 Function CreatePoints(dicPoints() As Dictionary) As Point()
@@ -445,12 +534,18 @@ Function CreatePoint(dicPoint As Dictionary) As Point
         SetArray dicCosts, dicPoint, "Cost"
         CreatePoint.Costs = CreateCosts(dicCosts)
     End If
+    If dicPoint.Exists("SerializeData") = True Then
+        CreatePoint.SerializeData = dicPoint("SerializeData")
+    End If
+    If dicPoint.Exists("Status") Then
+        CreatePoint.Status = CreateStatus(dicPoint("Status"))
+    End If
 End Function
 
 Function CreateStation(dicStation As Dictionary) As Station
     Dim dicType As Dictionary
     If dicStation.Exists("code") = True Then
-        CreateStation.code = dicStation("code")
+        CreateStation.Code = dicStation("code")
     End If
     If dicStation.Exists("Name") = True Then
         CreateStation.Name = dicStation("Name")
@@ -543,7 +638,7 @@ End Function
 ' Prefectureç\ë¢ëÃÇÃçÏê¨
 Function CreatePrefecture(dicPrefecture As Dictionary) As Prefecture
     If dicPrefecture.Exists("code") = True Then
-        CreatePrefecture.code = dicPrefecture("code")
+        CreatePrefecture.Code = dicPrefecture("code")
     End If
     If dicPrefecture.Exists("Name") = True Then
         CreatePrefecture.Name = dicPrefecture("Name")

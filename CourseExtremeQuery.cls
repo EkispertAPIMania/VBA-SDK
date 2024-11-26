@@ -76,6 +76,7 @@ Public Function Find() As ResultSet
         Exit Function
     End If
     m_Client.SetArray dicCourses, Result, "Course"
+    ' Debug.Print JsonConverter.ConvertToJson(dicCourses)
     Response.Courses = m_Client.CreateCourses(dicCourses)
     Response.Success = True
     Find = Response

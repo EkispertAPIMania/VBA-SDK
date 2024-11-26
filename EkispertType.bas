@@ -8,12 +8,12 @@ Type GeoPoint
 End Type
 
 Type Prefecture
-    code As String
+    Code As String
     Name As String
 End Type
 
 Type Gate
-    code As String
+    Code As String
     Name As String
     GeoPoint As GeoPoint
 End Type
@@ -24,7 +24,7 @@ Type TransportType
 End Type
 
 Type Station
-    code As String
+    Code As String
     Name As String
     OldName As String
     Yomi As String
@@ -38,6 +38,10 @@ Type Cost
     BaseIndex As Long
 End Type
 
+Type Status
+    Code As Integer
+End Type
+
 Type Point
     GetOn As Boolean
     GetOff As Boolean
@@ -47,60 +51,64 @@ Type Point
     Prefecture As Prefecture
     Station As Station
     Costs() As Cost
+    SerializeData As String
+    Status As Status
 End Type
 
 Type EkispertError
     ApiVersion As String
     EngineVersion As String
-    code As String
+    Code As String
     Message As String
 End Type
 
 Type DateTime
     Text As String
-    operation As String
+    Operation As String
 End Type
 
 
 Type ArrivalState
-    no As String
+    No As String
     Type As String
     DateTime As DateTime
 End Type
 
 Type DepartureState
-    no As String
+    No As String
     Type As String
     DateTime As DateTime
     isStarting As String
 End Type
 
 Type LineSymbol
-    code As String
+    Code As String
     Name As String
 End Type
 
 
 Type Line
-    stopStationCount As String
-    teiki3Index As String
-    teiki6Index As String
-    timeOnBoard As String
-    track As String
-    exhaustCO2 As String
-    fareIndex As String
-    exhaustCO2atPassengerCar As String
-    distance As String
-    trainID As String
-    teiki1Index As String
+    StopStationCount As String
+    Teiki3Index As String
+    Teiki6Index As String
+    TimeOnBoard As String
+    Track As String
+    ExhaustCO2 As String
+    FareIndex As String
+    ExhaustCO2atPassengerCar As String
+    Distance As String
+    TrainID As String
+    Teiki1Index As String
     Name As String
-    Type As String
+    Type As TransportType
     ArrivalState As ArrivalState
     Destination As String
     TimeReliability As String
     DepartureState As DepartureState
     LineSymbol As LineSymbol
     Color As String
+    Status As Status
+    OldName As String
 End Type
 
 Type Remark
@@ -132,10 +140,10 @@ End Type
 
 Type Route
     timeOther As String
-    timeOnBoard As String
-    exhaustCO2 As String
-    exhaustCO2atPassengerCar As String
-    distance As String
+    TimeOnBoard As String
+    ExhaustCO2 As String
+    ExhaustCO2atPassengerCar As String
+    Distance As String
     timeWalk As String
     TransferCount As String
     Lines() As Line
@@ -193,11 +201,26 @@ Type RepaymentList
     RepaymentTickets() As RepaymentTicket
 End Type
 
+Type Corporation
+    Status As Status
+    Code As Integer
+    Name As String
+    OldName As String
+End Type
+
+Type update
+    Type As String
+    Points() As Point
+    Lines() As Line
+    Corporations() As Corporation
+End Type
+
 Type ResultSet
     Max As Long
     Offset As Long
     RoundTripType As String
     Points() As Point
+    Point As Point
     Courses() As Course
     Bases() As Base
     RepaymentList As RepaymentList
@@ -205,6 +228,7 @@ Type ResultSet
     Success As Boolean
     Error As EkispertError
     Condition As String
+    Updates() As update
 End Type
 
 Public Enum NameMatchTypeEnum
