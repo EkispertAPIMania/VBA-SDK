@@ -169,7 +169,7 @@ Function CreateCourse(dicCourse As Dictionary) As Course
     
     CreateCourse.SerializeData = dicCourse("SerializeData")
     CreateCourse.dataType = dicCourse("dataType")
-    CreateCourse.searchType = dicCourse("searchType")
+    CreateCourse.SearchType = dicCourse("searchType")
     
     ' Price
     SetArray dicPrices, dicCourse, "Price"
@@ -179,7 +179,11 @@ Function CreateCourse(dicCourse As Dictionary) As Course
     CreateCourse.Route = CreateRoute(dicCourse)
     
     ' Teiki
-    CreateCourse.Teiki = CreateTeiki(dicCourse)
+    If dicCourse.Exists("Teiki") Then
+        Dim dicTeiki As Dictionary
+        Set dicTeiki = dicCourse("Teiki")
+        CreateCourse.Teiki = CreateTeiki(dicTeiki)
+    End If
     
     If dicCourse.Exists("AssignStatus") Then
         Dim dicAssignStatus As Dictionary
@@ -250,13 +254,10 @@ Function CreatePrices(dicPrices() As Dictionary) As Price()
     CreatePrices = Prices
 End Function
 
-Function CreateTeiki(dicCourse As Dictionary) As Teiki
-    Dim dicTeiki As Dictionary
-    If dicCourse.Exists("Teiki") Then
-        Set dicTeiki = dicCourse("Teiki")
-        CreateTeiki.DisplayRoute = dicTeiki("DisplayRoute")
-        CreateTeiki.SerializeData = dicTeiki("SerializeData")
-    End If
+Function CreateTeiki(dicTeiki As Dictionary) As Teiki
+    CreateTeiki.DisplayRoute = dicTeiki("DisplayRoute")
+    CreateTeiki.SerializeData = dicTeiki("SerializeData")
+    CreateTeiki.DetailRoute = dicTeiki("DetailRoute")
 End Function
 
 Function CreateRoute(dicCourse As Dictionary) As Route

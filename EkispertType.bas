@@ -136,6 +136,7 @@ End Type
 Type Teiki
     SerializeData As String
     DisplayRoute As String
+    DetailRoute As String
 End Type
 
 Type Route
@@ -157,7 +158,7 @@ Type AssignStatus
 End Type
 
 Type Course
-    searchType As String
+    SearchType As String
     dataType As String
     SerializeData As String
     Prices() As Price

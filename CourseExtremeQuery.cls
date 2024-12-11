@@ -43,7 +43,6 @@ Private Sub Class_Initialize()
     m_Date = Now
     m_SearchType = Departure
     m_Sort = Ekispert
-    
     m_AnswerCount = 5
     m_SearchCount = 20
     m_ResultDetail = ""
@@ -56,6 +55,23 @@ Private Sub Class_Initialize()
     m_AddChange = False
     m_AddStop = False
     m_Gcs = GCSEnum.Tokyo
+    m_AssignPassClassIndex = 0
+    Erase m_ViaList
+    Erase m_FixedRailList
+    Erase m_FixedRailDirectionList
+    Erase m_ConditionDetail
+    Erase m_CorporationBind
+    Erase m_InterruptCorporationList
+    Erase m_InterruptRailList
+    Erase m_InterruptOperationLineCodeList
+    Erase m_InterruptTransferStationCodeList
+    Erase m_AssignRoute
+    Erase m_AssignDetailRoute
+
+End Sub
+
+Public Sub Reset()
+    Class_Initialize
 End Sub
 
 Public Function Find() As ResultSet
@@ -111,7 +127,7 @@ Public Property Let DateProp(ByVal value As Date)
     m_Date = value
 End Property
 
-Public Property Let searchType(ByVal value As SearchTypeEnum)
+Public Property Let SearchType(ByVal value As SearchTypeEnum)
     m_SearchType = value
 End Property
 
