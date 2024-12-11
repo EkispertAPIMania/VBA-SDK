@@ -107,7 +107,6 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     m_Success = False
     Dim Client As New WebClient
     Client.BaseUrl = Url
-    
     Dim DirectionsRequest As New WebRequest
     DirectionsRequest.Method = WebMethod.HttpGet
     Query.Add "key", m_ApiKey
@@ -160,23 +159,39 @@ Function CreateCourses(dicCourses() As Dictionary) As Course()
     For i = 0 To UBound(dicCourses)
         Dim dicCourse As Dictionary
         Set dicCourse = dicCourses(i)
-        Dim tCourse As Course
-        tCourse.SerializeData = dicCourse("SerializeData")
-        tCourse.dataType = dicCourse("dataType")
-        tCourse.searchType = dicCourse("searchType")
-        
-        ' Price
-        SetArray dicPrices, dicCourse, "Price"
-        tCourse.Prices = CreatePrices(dicPrices)
-
-        ' Route
-        tCourse.Route = CreateRoute(dicCourse)
-        
-        ' Teiki
-        tCourse.Teiki = CreateTeiki(dicCourse)
-        Courses(i) = tCourse
+        Courses(i) = CreateCourse(dicCourse)
     Next i
     CreateCourses = Courses
+End Function
+
+Function CreateCourse(dicCourse As Dictionary) As Course
+    Dim dicPrices() As Dictionary
+    
+    CreateCourse.SerializeData = dicCourse("SerializeData")
+    CreateCourse.dataType = dicCourse("dataType")
+    CreateCourse.searchType = dicCourse("searchType")
+    
+    ' Price
+    SetArray dicPrices, dicCourse, "Price"
+    CreateCourse.Prices = CreatePrices(dicPrices)
+
+    ' Route
+    CreateCourse.Route = CreateRoute(dicCourse)
+    
+    ' Teiki
+    CreateCourse.Teiki = CreateTeiki(dicCourse)
+    
+    If dicCourse.Exists("AssignStatus") Then
+        Dim dicAssignStatus As Dictionary
+        Set dicAssignStatus = dicCourse("AssignStatus")
+        CreateCourse.AssignStatus = CreateAssignStatus(dicAssignStatus)
+    End If
+End Function
+
+Function CreateAssignStatus(dicAssignStatus As Dictionary) As AssignStatus
+    CreateAssignStatus.Code = dicAssignStatus("code")
+    CreateAssignStatus.Kind = dicAssignStatus("kind")
+    CreateAssignStatus.RequireUpdate = dicAssignStatus("requireUpdate")
 End Function
 
 Sub LngOrDict(var As Variant, ByRef num As Long, ByRef dic As Dictionary)
@@ -251,7 +266,7 @@ Function CreateRoute(dicCourse As Dictionary) As Route
     CreateRoute.ExhaustCO2 = dicRoute("exhaustCO2")
     CreateRoute.ExhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
     CreateRoute.TimeOnBoard = dicRoute("timeOnBoard")
-    CreateRoute.timeOther = dicRoute("timeOther")
+    CreateRoute.TimeOther = dicRoute("timeOther")
     CreateRoute.timeWalk = dicRoute("timeWalk")
     CreateRoute.TransferCount = dicRoute("transferCount")
     ' Point

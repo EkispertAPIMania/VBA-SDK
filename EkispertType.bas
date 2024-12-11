@@ -139,7 +139,7 @@ Type Teiki
 End Type
 
 Type Route
-    timeOther As String
+    TimeOther As String
     TimeOnBoard As String
     ExhaustCO2 As String
     ExhaustCO2atPassengerCar As String
@@ -150,6 +150,12 @@ Type Route
     Points() As Point
 End Type
 
+Type AssignStatus
+    Kind As String
+    Code As Integer
+    RequireUpdate As Integer
+End Type
+
 Type Course
     searchType As String
     dataType As String
@@ -157,6 +163,7 @@ Type Course
     Prices() As Price
     Teiki As Teiki
     Route As Route
+    AssignStatus As AssignStatus
 End Type
 
 Type Base

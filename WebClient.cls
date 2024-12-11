@@ -395,7 +395,7 @@ Public Function GetJson(Url As String, Optional Options As Dictionary) As WebRes
     Dim web_Request As New WebRequest
     web_Request.CreateFromOptions Options
     web_Request.Resource = Url
-    web_Request.Format = WebFormat.Json
+    web_Request.Format = WebFormat.json
     web_Request.Method = WebMethod.HttpGet
 
     Set GetJson = Me.Execute(web_Request)
@@ -442,7 +442,7 @@ Public Function PostJson(Url As String, Body As Variant, Optional Options As Dic
     Dim web_Request As New WebRequest
     web_Request.CreateFromOptions Options
     web_Request.Resource = Url
-    web_Request.Format = WebFormat.Json
+    web_Request.Format = WebFormat.json
     web_Request.Method = WebMethod.HttpPost
     If VBA.IsObject(Body) Then
         Set web_Request.Body = Body

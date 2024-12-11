@@ -59,7 +59,7 @@ Public Function Find() As ResultSet
         Find = Response
         Exit Function
     End If
-    Debug.Print JsonConverter.ConvertToJson(Result)
+    ' Debug.Print JsonConverter.ConvertToJson(Result)
     Dim dicUpdates() As Dictionary
     
     m_Client.SetArray dicUpdates, Result, "Update"
