@@ -122,7 +122,7 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     DirectionsRequest.Resource = ApiPath & "?" & Join(QueryString, "&")
     Dim Response As WebResponse
     Set Response = Client.Execute(DirectionsRequest)
-    ' Debug.Print Client.GetFullUrl(DirectionsRequest)
+    Debug.Print Client.GetFullUrl(DirectionsRequest)
     
     If Response.StatusCode <> WebStatusCode.Ok Then
         Dim Error As Dictionary
@@ -155,7 +155,7 @@ Function CreateCourses(dicCourses() As Dictionary) As Course()
     Dim i As Long
     Dim Courses() As Course
     ReDim Courses(UBound(dicCourses)) As Course
-    Dim dicPrices() As Dictionary
+    ' Dim dicPrices() As Dictionary
     For i = 0 To UBound(dicCourses)
         Dim dicCourse As Dictionary
         Set dicCourse = dicCourses(i)
@@ -166,6 +166,8 @@ End Function
 
 Function CreateCourse(dicCourse As Dictionary) As Course
     Dim dicPrices() As Dictionary
+    Dim dicRoutes() As Dictionary
+    
     
     CreateCourse.SerializeData = dicCourse("SerializeData")
     CreateCourse.dataType = dicCourse("dataType")
@@ -176,7 +178,9 @@ Function CreateCourse(dicCourse As Dictionary) As Course
     CreateCourse.Prices = CreatePrices(dicPrices)
 
     ' Route
-    CreateCourse.Route = CreateRoute(dicCourse)
+    CreateCourse.Route = CreateRoute(dicCourse("Route"))
+    
+    ' Debug.Print JsonConverter.ConvertToJson(CreateCourse.Routes)
     
     ' Teiki
     If dicCourse.Exists("Teiki") Then
@@ -190,6 +194,19 @@ Function CreateCourse(dicCourse As Dictionary) As Course
         Set dicAssignStatus = dicCourse("AssignStatus")
         CreateCourse.AssignStatus = CreateAssignStatus(dicAssignStatus)
     End If
+End Function
+
+Function CreateRoutes(dicRoutes() As Dictionary) As Route()
+    Dim i As Long
+    Dim Routes() As Route
+    ReDim Routes(UBound(dicRoutes)) As Route
+    ' Dim dicPrices() As Dictionary
+    For i = 0 To UBound(dicRoutes)
+        Dim dicRoute As Dictionary
+        Set dicRoute = dicRoutes(i)
+        Routes(i) = CreateRoute(dicRoute)
+    Next i
+    CreateRoutes = Routes
 End Function
 
 Function CreateAssignStatus(dicAssignStatus As Dictionary) As AssignStatus
@@ -260,9 +277,7 @@ Function CreateTeiki(dicTeiki As Dictionary) As Teiki
     CreateTeiki.DetailRoute = dicTeiki("DetailRoute")
 End Function
 
-Function CreateRoute(dicCourse As Dictionary) As Route
-    Dim dicRoute As Dictionary
-    Set dicRoute = dicCourse("Route")
+Function CreateRoute(dicRoute As Dictionary) As Route
     CreateRoute.Distance = dicRoute("distance")
     CreateRoute.ExhaustCO2 = dicRoute("exhaustCO2")
     CreateRoute.ExhaustCO2atPassengerCar = dicRoute("exhaustCO2atPassengerCar")
