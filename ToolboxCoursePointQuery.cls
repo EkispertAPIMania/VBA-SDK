@@ -21,8 +21,8 @@ Private m_Teiki6() As String
 
 Private m_Client As Ekispert
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 ' Property Let methods

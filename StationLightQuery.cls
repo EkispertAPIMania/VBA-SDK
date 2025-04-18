@@ -71,8 +71,8 @@ Function CreatePoints(dicPoints() As Dictionary) As Point()
 End Function
 
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 Property Let Name(ByVal Name As String)

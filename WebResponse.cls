@@ -133,7 +133,7 @@ End Sub
 ' @param {WinHttpRequest} Http
 ' @throws 11030 / 80042b16 / -2147210474 - Error creating from http
 ''
-Public Sub CreateFromHttp(Client As WebClient, Request As WebRequest, Http As Object)
+Public Sub CreateFromHttp(client As WebClient, Request As WebRequest, Http As Object)
     On Error GoTo web_ErrorHandling
 
     Me.StatusCode = Http.Status
@@ -165,7 +165,7 @@ End Sub
 ' @param {String} Result
 ' @throws 11031 / 80042b17 / -2147210473 - Error creating from cURL
 ''
-Public Sub CreateFromCurl(Client As WebClient, Request As WebRequest, Result As String)
+Public Sub CreateFromCurl(client As WebClient, Request As WebRequest, Result As String)
     On Error GoTo web_ErrorHandling
 
     Dim web_Lines() As String
@@ -231,7 +231,7 @@ Public Function ExtractHeaders(ResponseHeaders As String) As Collection
 
             If Not web_Multiline Then
                 Set web_Header = WebHelpers.CreateKeyValue( _
-                    Key:=VBA.Trim(VBA.Mid$(web_Lines(web_i), 1, web_ColonPosition - 1)), _
+                    key:=VBA.Trim(VBA.Mid$(web_Lines(web_i), 1, web_ColonPosition - 1)), _
                     value:=VBA.Trim(VBA.Mid$(web_Lines(web_i), web_ColonPosition + 1, VBA.Len(web_Lines(web_i)))) _
                 )
             Else

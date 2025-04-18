@@ -25,71 +25,71 @@ Property Let Secure(ByVal Secure As Boolean)
     m_Secure = Secure
 End Property
 
-Property Let ApiKey(ByVal ApiKey As String)
-    m_ApiKey = ApiKey
+Property Let apiKey(ByVal apiKey As String)
+    m_ApiKey = apiKey
 End Property
 
 Property Get Secure() As Boolean
     Secure = m_Secure
 End Property
 
-Property Get ApiKey() As String
-    ApiKey = m_ApiKey
+Property Get apiKey() As String
+    apiKey = m_ApiKey
 End Property
 
 ' 駅検索クエリーオブジェクトを返す
 Function StationQuery() As StationQuery
     Set StationQuery = New StationQuery
-    StationQuery.Client = Me
+    StationQuery.client = Me
 End Function
 
 ' 簡易駅検索クエリーオブジェクトを返す
 Function StationLightQuery() As StationLightQuery
     Set StationLightQuery = New StationLightQuery
-    StationLightQuery.Client = Me
+    StationLightQuery.client = Me
 End Function
 
 ' 経路探索クエリーオブジェクトを返す
 Function CourseExtremeQuery() As CourseExtremeQuery
     Set CourseExtremeQuery = New CourseExtremeQuery
-    CourseExtremeQuery.Client = Me
+    CourseExtremeQuery.client = Me
 End Function
 
 ' 経路探索クエリーオブジェクトを返す
 Function CoursePlainQuery() As CoursePlainQuery
     Set CoursePlainQuery = New CoursePlainQuery
-    CoursePlainQuery.Client = Me
+    CoursePlainQuery.client = Me
 End Function
 
 ' 緯度経度からの周辺駅検索クエリーオブジェクトを返す
 Function GeoStationQuery() As GeoStationQuery
     Set GeoStationQuery = New GeoStationQuery
-    GeoStationQuery.Client = Me
+    GeoStationQuery.client = Me
 End Function
 
 Function SearchMultipleRangeQuery() As SearchMultipleRangeQuery
     Set SearchMultipleRangeQuery = New SearchMultipleRangeQuery
-    SearchMultipleRangeQuery.Client = Me
+    SearchMultipleRangeQuery.client = Me
 End Function
 
 Function CourseRepaymentQuery() As CourseRepaymentQuery
     Set CourseRepaymentQuery = New CourseRepaymentQuery
-    CourseRepaymentQuery.Client = Me
+    CourseRepaymentQuery.client = Me
 End Function
 
 Function ToolboxCourseConditionQuery() As ToolboxCourseConditionQuery
     Set ToolboxCourseConditionQuery = New ToolboxCourseConditionQuery
-    ToolboxCourseConditionQuery.Client = Me
+    ToolboxCourseConditionQuery.client = Me
 End Function
 
 Function ToolboxCoursePointQuery() As ToolboxCoursePointQuery
     Set ToolboxCoursePointQuery = New ToolboxCoursePointQuery
-    ToolboxCoursePointQuery.Client = Me
+    ToolboxCoursePointQuery.client = Me
 End Function
 
 Function ToolboxCourseUpdateQuery() As ToolboxCourseUpdateQuery
     Set ToolboxCourseUpdateQuery = New ToolboxCourseUpdateQuery
-    ToolboxCourseUpdateQuery.Client = Me
+    ToolboxCourseUpdateQuery.client = Me
 End Function
 
 Property Get Url() As String
@@ -105,8 +105,8 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     Dim e As EkispertError
     m_Error = e
     m_Success = False
-    Dim Client As New WebClient
-    Client.BaseUrl = Url
+    Dim client As New WebClient
+    client.BaseUrl = Url
     Dim DirectionsRequest As New WebRequest
     DirectionsRequest.Method = WebMethod.HttpGet
     Query.Add "key", m_ApiKey
@@ -121,8 +121,8 @@ Function Fetch(ApiPath As String, Query As Dictionary) As Dictionary
     
     DirectionsRequest.Resource = ApiPath & "?" & Join(QueryString, "&")
     Dim Response As WebResponse
-    Set Response = Client.Execute(DirectionsRequest)
-    Debug.Print Client.GetFullUrl(DirectionsRequest)
+    Set Response = client.Execute(DirectionsRequest)
+    Debug.Print client.GetFullUrl(DirectionsRequest)
     
     If Response.StatusCode <> WebStatusCode.Ok Then
         Dim Error As Dictionary
@@ -713,14 +713,14 @@ End Property
 
 ' 指定したキーが配列ではない場合、配列にする
 ' 配列の場合は、配列で返す
-Sub SetArray(ByRef ary() As Dictionary, Data As Dictionary, Key As String)
+Sub SetArray(ByRef ary() As Dictionary, Data As Dictionary, key As String)
 On Error GoTo NotArray
 
     Dim Index As Long
-    ReDim ary(Data(Key).Count - 1) As Dictionary
+    ReDim ary(Data(key).Count - 1) As Dictionary
     Dim Params As Dictionary
     
-    For Each Params In Data(Key)
+    For Each Params In Data(key)
         Set ary(Index) = Params
         Index = Index + 1
     Next Params
@@ -728,7 +728,7 @@ On Error GoTo NotArray
 NotArray:
     ' 配列じゃない場合
     ReDim ary(0) As Dictionary
-    Set ary(0) = Data(Key)
+    Set ary(0) = Data(key)
 End Sub
 
 Function GetTransportType(TransportType As TransportTypeEnum) As String

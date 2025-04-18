@@ -51,8 +51,8 @@ Public Function Find() As ResultSet
 
 End Function
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 Public Sub GeoPoint(Latitude As String, Longitude As String, Optional Gcs As GCSEnum, Optional Radius As Long = 0)

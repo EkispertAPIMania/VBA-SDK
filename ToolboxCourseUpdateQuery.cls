@@ -16,8 +16,8 @@ Private m_Date As Date
 
 Private m_Client As Ekispert
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 ' Initialize default values

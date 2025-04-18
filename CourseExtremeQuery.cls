@@ -100,8 +100,8 @@ Public Function Find() As ResultSet
     ' Debug.Print JsonConverter.ConvertToJson(Result)
 End Function
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 Public Property Let ViaList(i As Long, ByVal value As String)
@@ -284,7 +284,7 @@ Function BuildQuery() As Dictionary
     Set BuildQuery = New Dictionary
     BuildQuery.Add "excludeSameLineStation", IIf(m_ExcludeSameLineStation, "true", "false")
     BuildQuery.Add "date", Format(m_Date, "yyyymmdd")
-    BuildQuery.Add "time", Format(m_Date, "hnn")
+    BuildQuery.Add "time", Format(m_Date, "hhnn")
     BuildQuery.Add "searchType", SearchTypeString()
     BuildQuery.Add "sort", SortString()
     BuildQuery.Add "answerCount", m_AnswerCount

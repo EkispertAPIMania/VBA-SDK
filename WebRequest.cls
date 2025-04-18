@@ -574,8 +574,8 @@ End Property
 ' @param {String} Key
 ' @param {Variant} Value
 ''
-Public Sub AddHeader(Key As String, value As Variant)
-    Me.Headers.Add WebHelpers.CreateKeyValue(Key, value)
+Public Sub AddHeader(key As String, value As Variant)
+    Me.Headers.Add WebHelpers.CreateKeyValue(key, value)
 End Sub
 
 ''
@@ -603,8 +603,8 @@ End Sub
 ' @param {String} Key
 ' @param {Variant} Value
 ''
-Public Sub SetHeader(Key As String, value As Variant)
-    WebHelpers.AddOrReplaceInKeyValues Me.Headers, Key, value
+Public Sub SetHeader(key As String, value As Variant)
+    WebHelpers.AddOrReplaceInKeyValues Me.Headers, key, value
 End Sub
 
 ''
@@ -656,8 +656,8 @@ End Sub
 ' @param {String} Key
 ' @param {Variant} Value
 ''
-Public Sub AddQuerystringParam(Key As String, value As Variant)
-    Me.QuerystringParams.Add WebHelpers.CreateKeyValue(Key, value)
+Public Sub AddQuerystringParam(key As String, value As Variant)
+    Me.QuerystringParams.Add WebHelpers.CreateKeyValue(key, value)
 End Sub
 
 ''
@@ -676,9 +676,9 @@ End Sub
 ' @param {String} Key
 ' @param {Variant} Value
 ''
-Public Sub AddCookie(Key As String, value As Variant)
+Public Sub AddCookie(key As String, value As Variant)
     Me.Cookies.Add WebHelpers.CreateKeyValue( _
-        web_EncodeCookieName(Key), _
+        web_EncodeCookieName(key), _
         WebHelpers.URLEncode(value, EncodingMode:=UrlEncodingMode.CookieUrlEncoding) _
     )
 End Sub
@@ -710,7 +710,7 @@ End Sub
 ' @param {Variant} Value
 ' @throws 11020 / 80042b0c / -2147210484 - Cannot add body parameter to non-Dictionary
 ''
-Public Sub AddBodyParameter(Key As Variant, value As Variant)
+Public Sub AddBodyParameter(key As Variant, value As Variant)
     If VBA.IsEmpty(web_pBody) Then
         Set web_pBody = New Dictionary
     ElseIf Not TypeOf web_pBody Is Dictionary Then
@@ -722,9 +722,9 @@ Public Sub AddBodyParameter(Key As Variant, value As Variant)
     End If
 
     If VBA.IsObject(value) Then
-        Set web_pBody(Key) = value
+        Set web_pBody(key) = value
     Else
-        web_pBody(Key) = value
+        web_pBody(key) = value
     End If
 
     ' Clear cached converted body

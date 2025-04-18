@@ -521,10 +521,10 @@ End Sub
 ' @param {WebClient} Client
 ' @param {WebRequest} Request
 ''
-Public Sub LogRequest(Client As WebClient, Request As WebRequest)
+Public Sub LogRequest(client As WebClient, Request As WebRequest)
     If EnableLogging Then
         Debug.Print "--> Request - " & Format(Now, "Long Time")
-        Debug.Print MethodToName(Request.Method) & " " & Client.GetFullUrl(Request)
+        Debug.Print MethodToName(Request.Method) & " " & client.GetFullUrl(Request)
 
         Dim web_KeyValue As Dictionary
         For Each web_KeyValue In Request.Headers
@@ -551,7 +551,7 @@ End Sub
 ' @param {WebRequest} Request
 ' @param {WebResponse} Response
 ''
-Public Sub LogResponse(Client As WebClient, Request As WebRequest, Response As WebResponse)
+Public Sub LogResponse(client As WebClient, Request As WebRequest, Response As WebResponse)
     If EnableLogging Then
         Dim web_KeyValue As Dictionary
 
@@ -1427,10 +1427,10 @@ End Function
 ' @param {Variant} Value
 ' @return {Dictionary}
 ''
-Public Function CreateKeyValue(Key As String, value As Variant) As Dictionary
+Public Function CreateKeyValue(key As String, value As Variant) As Dictionary
     Dim web_KeyValue As New Dictionary
 
-    web_KeyValue("Key") = Key
+    web_KeyValue("Key") = key
     web_KeyValue("Value") = value
     Set CreateKeyValue = web_KeyValue
 End Function
@@ -1455,11 +1455,11 @@ End Function
 ' @param {Variant} Key to find
 ' @return {Variant}
 ''
-Public Function FindInKeyValues(KeyValues As Collection, Key As Variant) As Variant
+Public Function FindInKeyValues(KeyValues As Collection, key As Variant) As Variant
     Dim web_KeyValue As Dictionary
 
     For Each web_KeyValue In KeyValues
-        If web_KeyValue("Key") = Key Then
+        If web_KeyValue("Key") = key Then
             FindInKeyValues = web_KeyValue("Value")
             Exit Function
         End If
@@ -1495,16 +1495,16 @@ End Function
 ' @param {Variant} Value
 ' @return {Variant}
 ''
-Public Sub AddOrReplaceInKeyValues(KeyValues As Collection, Key As Variant, value As Variant)
+Public Sub AddOrReplaceInKeyValues(KeyValues As Collection, key As Variant, value As Variant)
     Dim web_KeyValue As Dictionary
     Dim web_Index As Long
     Dim web_NewKeyValue As Dictionary
 
-    Set web_NewKeyValue = CreateKeyValue(CStr(Key), value)
+    Set web_NewKeyValue = CreateKeyValue(CStr(key), value)
 
     web_Index = 1
     For Each web_KeyValue In KeyValues
-        If web_KeyValue("Key") = Key Then
+        If web_KeyValue("Key") = key Then
             ' Replace existing
             KeyValues.Remove web_Index
 
@@ -1765,7 +1765,7 @@ Public Function HMACSHA1(Text As String, Secret As String, Optional Format As St
     web_SecretBytes = VBA.StrConv(Secret, vbFromUnicode)
 
     Set web_Crypto = CreateObject("System.Security.Cryptography.HMACSHA1")
-    web_Crypto.Key = web_SecretBytes
+    web_Crypto.key = web_SecretBytes
     web_Bytes = web_Crypto.ComputeHash_2(web_TextBytes)
 
     Select Case Format
@@ -1812,7 +1812,7 @@ Public Function HmacSha256(Text As String, Secret As String, Optional Format As 
     web_SecretBytes = VBA.StrConv(Secret, vbFromUnicode)
 
     Set web_Crypto = CreateObject("System.Security.Cryptography.HMACSHA256")
-    web_Crypto.Key = web_SecretBytes
+    web_Crypto.key = web_SecretBytes
     web_Bytes = web_Crypto.ComputeHash_2(web_TextBytes)
 
     Select Case Format
@@ -1955,7 +1955,7 @@ End Function
 ' ============================================= '
 
 ' Helper for url-encoded to create key=value pair
-Private Function web_GetUrlEncodedKeyValue(Key As Variant, value As Variant, Optional EncodingMode As UrlEncodingMode = UrlEncodingMode.FormUrlEncoding) As String
+Private Function web_GetUrlEncodedKeyValue(key As Variant, value As Variant, Optional EncodingMode As UrlEncodingMode = UrlEncodingMode.FormUrlEncoding) As String
     Select Case VBA.VarType(value)
     Case VBA.vbBoolean
         ' Convert boolean to lowercase
@@ -1973,7 +1973,7 @@ Private Function web_GetUrlEncodedKeyValue(Key As Variant, value As Variant, Opt
     End Select
 
     ' Url encode key and value (using + for spaces)
-    web_GetUrlEncodedKeyValue = URLEncode(Key, EncodingMode:=EncodingMode) & "=" & URLEncode(value, EncodingMode:=EncodingMode)
+    web_GetUrlEncodedKeyValue = URLEncode(key, EncodingMode:=EncodingMode) & "=" & URLEncode(value, EncodingMode:=EncodingMode)
 End Function
 
 ''

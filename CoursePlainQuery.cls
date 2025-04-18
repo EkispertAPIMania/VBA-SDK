@@ -54,8 +54,8 @@ Public Function Find() As ResultSet
     ' Debug.Print JsonConverter.ConvertToJson(Result)
 End Function
 
-Property Let Client(ByVal Client As Ekispert)
-    Set m_Client = Client
+Property Let client(ByVal client As Ekispert)
+    Set m_Client = client
 End Property
 
 
